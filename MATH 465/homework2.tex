@@ -1,0 +1,92 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\setlength{\parindent}{0pt}\setlength{\parskip}{6pt}
+\setlist[enumerate,1]{label=\textbf{\arabic*.},leftmargin=*,itemsep=1.1em}
+\setlist[enumerate,2]{label=(\alph*),leftmargin=2em,itemsep=0.5em,topsep=0.3em}
+\newcommand{\duedate}{Tuesday, September 15, by 11:59PM}
+\begin{document}
+\begin{center}{\Large\bfseries Math 465: Homework 2}\\[4pt]{\large Due: \duedate}\end{center}
+\hrule\vspace{0.8em}
+\textbf{Instructions.} Write full and complete solutions to the following problems and submit them on
+Gradescope by the deadline. For each problem, explain the reasoning behind your
+answer; a formula or numerical answer without justification is not a complete
+solution. \textbf{If your final answer is numerical, please carry out the
+arithmetic} and state the resulting number (so, for example, if your answer is
+$6!-5!$, I want you to also tell me the answer is $600$.)
+
+You may discuss the problems with other students, but you must write up your
+solutions independently and in your own words. You are not allowed to use
+generative AI tools, Internet searches, or any other external means to directly
+obtain a solution. Generative AI tools may also not be used to proofread your
+writing or \LaTeX. If you are unsure about what is or is not permitted, please ask.
+
+At the beginning of your submission, acknowledge any permitted books, notes, or
+other sources you consulted, and list the names of any students with whom you
+discussed the homework.
+\vspace{0.5em}\hrule\vspace{1em}
+\begin{enumerate}
+\item Recall that a (strong) composition of $n$ is a sequence $a=(a_1,\ldots,a_k)$ of positive integers such that $a_1+\cdots+a_k=n$. The entries $a_i$ are called parts.
+\begin{enumerate}
+\item[(a)] How many total compositions does $n$ have?\\
+  There are $n-1$ spaces between $n$ consecutive units. Choosing which spaces contain separators gives $2^{n-1}$ compositions.
+\item[(b)] For $n\ge 2$, how many compositions of $n$ are there with an even number of even parts?\\
+  Give each composition weight $(-1)^r$, where $r$ is its number of even parts. The signed generating function is
+\[
+\sum_{n\ge0}(E_n-O_n)x^n=\frac{1}{1-(x+x^3+\cdots)+(x^2+x^4+\cdots)}=\frac{1-x^2}{1-x}=1+x.
+\]
+Thus $E_n-O_n=0$ for $n\ge2$. Since $E_n+O_n=2^{n-1}$, we get $E_n=2^{n-2}$.
+\item[(c)] Find a bijection between the set of compositions of $n$ with an even number of even parts and the set of binary strings of length $n-2$.\\
+  Encode a composition by its separator word $b_1\cdots b_{n-1}$ and delete $b_1$. For each fixed $b_2\cdots b_{n-1}$, the two choices of $b_1$ split or join the first block, so exactly one choice gives an even number of even parts. The remaining $n-2$ bits give a binary string, and the construction is reversible.
+\end{enumerate}
+\item Show that the number of weak compositions of $n$ with $k$ parts equals the number of weak compositions of $k-1$ with $n+1$ parts.\\
+  By stars and bars, the two numbers are respectively
+\[
+\binom{n+k-1}{k-1}\quad\text{and}\quad \binom{(k-1)+(n+1)-1}{(n+1)-1}=\binom{n+k-1}{n}.
+\]
+These are equal by symmetry of binomial coefficients.
+\item How many binary strings of length 12 have four $0$'s and eight $1$'s with no consecutive $0$'s?\\
+  Arrange the eight 1's first. They create nine gaps, including the two ends. Choose four distinct gaps for the zeros, giving $\binom94=126$.
+\item How many lattice paths from $(0,0)$ to $(8,5)$, using only steps one unit east and one unit north, pass through the point $(3,2)?$\\
+  Split the path at $(3,2)$. The number is
+\[
+\binom{5}{3}\binom{8}{5}=10\cdot56=560.
+\]
+\item A lattice path from $(0,0)$ to $(m,n)$ uses only steps one unit east and one unit north. Assume $m,n\ge2$. How many such paths have exactly three changes of direction?\\
+  There are four alternating runs. Each starting direction contributes $(m-1)(n-1)$ choices for the two positive east and two positive north run lengths. Therefore the answer is $2(m-1)(n-1)$.
+\item Prove the identity
+\[
+\sum_{j=0}^{n}\binom{m+j}{m}=\binom{m+n+1}{m+1}
+\]
+by counting lattice paths two ways.\\
+  Count paths from $(0,0)$ to $(m+1,n)$ by the height $j$ of the last north step. The preceding path has $m$ east and $j$ north steps, giving $\binom{m+j}{m}$ choices. Directly, the number of paths is $\binom{m+n+1}{m+1}$.
+\item Let $C_n$ be the number of north-east lattice paths from $(0,0)$ to $(n,n)$ that never go above $x=y$. Prove that
+\[
+C_n=\binom{2n}{n}-\binom{2n}{n-1}=\frac{1}{n+1}\binom{2n}{n}.
+\]\\
+  There are $\binom{2n}{n}$ total paths. Reflecting the initial part through the diagonal up to the first step above it bijects bad paths with paths to $(n-1,n+1)$, counted by $\binom{2n}{n-1}$. Hence
+\[
+C_n=\binom{2n}{n}-\binom{2n}{n-1}=\frac{1}{n+1}\binom{2n}{n}.
+\]
+\item Evaluate
+\[
+\sum_{k=0}^{n}\binom{n}{k}2^k
+\]
+and give a combinatorial explanation.\\
+  The binomial theorem gives $(1+2)^n=3^n$. Each object is omitted or selected with one of two labels, and $\binom nk2^k$ counts outcomes with $k$ selected objects.
+\item Find the coefficient of $x^5$ in the generalized binomial expansion of
+\[
+(1+x)^{-3/2}.
+\]\\
+  By the generalized binomial theorem,
+\[
+[x^5](1+x)^{-3/2}=\binom{-3/2}{5}=-\frac{63}{256}.
+\]
+\item Prove
+\[
+\frac{1}{\sqrt{1-4x}}=\sum_{n\ge0}\binom{2n}{n}x^n.
+\]\\
+  The generalized binomial theorem gives $(1-4x)^{-1/2}=\sum_{n\ge0}\binom{-1/2}{n}(-4x)^n$. Since $\binom{-1/2}{n}(-4)^n=\frac{(2n)!}{(n!)^2}=\binom{2n}{n}$, the identity follows.
+\end{enumerate}
+\end{document}

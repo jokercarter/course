@@ -1,0 +1,393 @@
+EECS 453 / Homework 1                                                                             解答与推导
+
+
+                                    Homework 1 解答
+                                线性代数、概率、最小二乘与 NumPy
+
+
+
+                                Problem 1：线性代数复习
+
+(a) 证明转置恒等式
+
+设 A 的第 i 行为 aTi ，其中 ai ∈ Rn 是列向量。于是
+                                        
+                     aT1             aT1 v
+                     .            .                             h                      i
+                 A= 
+                       ..  , Av =  ..  ,
+                                                             A T = a1 · · ·            an .
+                     aTn             aTn v
+
+因为 aTi v 为实数，aTi v = v T ai ，所以
+                            h                    i    h                          i
+                 (Av)T = aT1 v · · ·     aTn v       = v T a1 · · ·   vT a   n       = v T AT .
+
+
+(b) 链式法则
+
+这里求的是复合函数 f (x(w), y(w)) 对 w 的导数。首先
+
+                fx = 2x + 2y,    fy = 2x − 2y,         x′ = 2w − 3,    y ′ = 4w3 − 6w + 1.
+
+由链式法则，
+              df
+                 = (2x + 2y)(2w − 3) + (2x − 2y)(4w3 − 6w + 1)
+              dw
+                 = 2(w4 − 2w2 − 2w)(2w − 3) + 2(−w4 + 4w2 − 4w)(4w3 − 6w + 1)
+
+                 = −8w7 + 48w5 − 40w4 − 56w3 + 60w2 + 4w .
+
+
+(c) 正交变换保持平方范数
+
+正交矩阵满足 U T U = I，因此
+
+                        ∥U x∥22 = (U x)T (U x) = xT U T U x = xT x = ∥x∥22 .
+
+
+(d) 二次型的梯度
+              Pn Pn
+展开为 f (x) =    i=1   j=1 Aij xi xj 。对 xk 求偏导：
+
+                                   ∂f    X n        X         n
+                                       =   Akj xj +   Aik xi .
+                                   ∂xk
+                                          j=1                i=1
+
+
+                                                       1
+EECS 453 / Homework 1                                解答与推导
+
+
+第一项来自 xi 的导数，第二项来自 xj 的导数；当 i = j = k 时，两项合起来正好是 2Akk xk 。故
+∇x f = (A + AT )x。利用 A = AT ，得到
+
+                                  ∇x f (x) = 2Ax .
+
+
+
+
+                                         2
+EECS 453 / Homework 1                                                                    解答与推导
+
+
+                             Problem 2：概率复习
+
+(a) 恰好匹配 k 个号码
+
+固定购买的彩票，令 K 表示它与中奖号码的匹配数。中奖号码是从 51 个号码中等概率选取的 6 元子
+        
+集，共有 51
+      6 种。
+
+若恰好匹配 k 个，需要从彩票的 6 个号码中选出 k 个，再从其余 45 个号码中选出 6 − k 个。两个选择
+共同且唯一地确定中奖集合，所以
+                                          6
+                                                    45
+                                                          
+                                          k        6−k
+                        Pr(K = k) =               51
+                                                             ,   k = 0, 1, . . . , 6.
+                                                   6
+
+
+这是超几何分布。注意号码不计顺序，因此使用组合数而非排列数。
+
+
+(b) 机器说谎的概率
+
+按通常约定，骰子为相互独立的公平六面骰，掷骰结果也独立于抽奖。令 L 表示机器说谎。
+
+当 K = 0 时，机器必定说实话，即 Pr(L | K = 0) = 0。当 K = k ≥ 1 时，k 个骰子的点数之和至少为
+k。和等于 k 当且仅当每个骰子都是 1，因此
+                                         k
+                                         1
+                        Pr(L | K = k) =      ,                      k = 1, . . . , 6.
+                                         6
+
+应用全概率公式，
+
+                                  X
+                                  6
+                        Pr(L) =         Pr(L | K = k) Pr(K = k)
+                                  k=0
+                                        6        
+                                   1 X 6         45   1
+                             =        
+                                   51
+                                    6
+                                           k   6 − k 6k
+                                         k=1
+                                  11992137545
+                             =                 ≈ 0.071360586712.
+                                  168049873152
+
+所以机器说谎的概率约为 7.1361% 。求和从 k = 1 开始，不能把 k = 0 的情况也计作说谎。
+
+
+
+
+                                                      3
+EECS 453 / Homework 1                                                                             解答与推导
+
+
+                          Problem 3：线性最小二乘
+
+(a) 在特征向量坐标系中表示目标函数
+
+由实对称矩阵的谱分解，A = QΛQT ，其中 QT Q = QQT = I。定义
+
+                                 e = QT x,
+                                 x                     ye = QT y .
+
+        y ，故
+因为 y = Qe
+                                                     x − ye).
+                        Ax − y = QΛQT x − QQT y = Q(Λe
+
+根据 Problem 1(c) 中的正交不变性，
+
+                                               x − ye∥22 .
+                                ∥Ax − y∥22 = ∥Λe
+
+   e 是一一对应的坐标变换，逆变换为 x = Qe
+且x↔x                      x，因此在两组坐标下最小化是等价的。
+
+
+(b) 伪逆给出一个最小化解
+
+令 I+ = {i : λi ̸= 0}，I0 = {i : λi = 0}。这里 I+ 仅表示非零指标，并不要求特征值为正。逐坐标展开：
+                                         X                           X
+                           x − ye∥22 =
+                         ∥Λe                        ei − yei )2 +
+                                                (λi x                       yei2 .
+                                         i∈I+                        i∈I0
+
+
+                   ei = yei /λi 时每个平方项都为零。对 i ∈ I0 ，e
+     e 无关；第一项非负，且取 x
+第二项与 x                                              xi 可以任意选择。特
+别地，取它们为零，则                                                 
+                                                           1/λi ,    λi ̸= 0,
+                        e∗ = Λ† ye,
+                        x                (Λ† )ii =
+                                                           0,        λi = 0,
+
+非对角元素全为零。变回原坐标得到
+                                                                      X
+                        x∗ = QΛ† QT y ,              min f (x) =             yei2 .
+                                                       x
+                                                                      i∈I0
+
+
+解的非唯一性：由于 A 不可逆，至少一个零特征值存在。所有最小化解为
+                                         X
+                              x = x∗ +          c i qi ,         ci ∈ R.
+                                         i∈I0
+                                                                                      P
+这些额外项位于 ker A，不改变 Ax。又由于它们与 x∗ 正交，∥x∥22 = ∥x∗ ∥22 +                                             2      ∗
+                                                                                          i∈I0 ci ，所以 x 是唯一
+的最小范数最小二乘解。
+
+
+
+
+                                                 4
+EECS 453 / Homework 1                                                                                  解答与推导
+
+
+(c) 加分题：一般矩阵的 SVD 解法
+
+设 A ∈ Rm×n ，y ∈ Rm ，rank(A) = r。取完整奇异值分解
+
+                    A = U ΣV T ,     U ∈ Rm×m ,            V ∈ Rn×n ,          Σ ∈ Rm×n ,
+
+其中 U, V 正交，Σ 的前 r 个对角元素为 σi > 0，其余元素为零。定义 z = V T x ∈ Rn ，b = U T y ∈ Rm 。
+于是
+
+                            ∥Ax − y∥22 = ∥U (Σz − b)∥22 = ∥Σz − b∥22
+                                              X
+                                              r                        X
+                                                                       m
+                                       =            (σi zi − bi ) +
+                                                                 2
+                                                                               b2i .
+                                              i=1                      i=r+1
+
+这同时适用于高矩阵、宽矩阵和秩亏矩阵。后一个求和为无法通过选择 x 消去的常数；令
+                       
+                       bi /σi , 1 ≤ i ≤ r,
+                 zi∗ =
+                       0,       r < i ≤ n,
+
+便使第一个求和达到零。定义 Σ† ∈ Rn×m ，它的前 r 个对角元素为 1/σi ，其余为零。则
+
+                                                                                       X
+                                                                                       m
+                        ∗    †            †
+                                 T
+                    x =VΣ U y =A y ,                      min ∥Ax − y∥22 =                     b2i .
+                                                           x
+                                                                                       i=r+1
+
+
+若 vi 是 V 的第 i 列，所有最小化解为
+                                               X
+                                               n
+                                      ∗
+                                 x=x +                 ci vi ,       ci ∈ R.
+                                              i=r+1
+
+由 V 的正交性，x∗ 仍是唯一的最小范数最小二乘解。当 r = n 时最小化解唯一；当 r < n 时不唯一。
+当 r = 0 时，A = 0，所有 x 都是最小化解，而 x∗ = 0 是最小范数解。空求和按零处理，因此上述公式
+也覆盖此情形。
+
+
+
+
+                                                      5
+EECS 453 / Homework 1                                                                          解答与推导
+
+
+                                 Problem 4：NumPy 向量化
+
+以下答案均不使用循环或列表推导式。附录是完成后的 notebook 的代码单元与实际运行输出；原 note-
+book 的参考检查函数保持不变。
+
+
+(a) 各行的 ℓ1 范数
+
+def row_l1_norms(A):
+    return np.abs(A).sum(axis=1)
+
+                                      PM
+对 A ∈ RN ×M ，第 i 个输出为 xi =               j=1 |Aij |。绝对值逐元素计算，随后沿列方向（axis=1）求和，输
+出形状为 (N,)。函数体只有一行。
+
+
+(b) 为每个住址分配最近基站
+
+def closest_tower(A, B):
+    a2 = (A**2).sum(axis=1)[None, :]
+    b2 = (B**2).sum(axis=1)[:, None]
+    sq_dists = b2 + a2 - 2 * B @ A.T
+    return np.argmin(sq_dists, axis=1)
+
+
+函数体恰好四行。假设有至少一个基站（M ≥ 1）。各个中间量的形状如下：
+
+                            变量            形状          含义
+                            a2            (1, M)      各基站坐标的平方范数
+                            b2            (N, 1)      各住址坐标的平方范数
+                            B @ A.T       (N, M)      所有住址与基站的内积
+                            sq_dists      (N, M)      所有住址与基站的平方距离
+                            输出            (N,)        各住址的最近基站索引
+
+广播相加并减去内积项后，第 (i, j) 个元素为
+
+                       sq_distsij = ∥Bi,: ∥22 + ∥Aj,: ∥22 − 2Bi,: ATj,: = ∥Bi,: − Aj,: ∥22 .
+
+平方根严格递增，因此无需开平方就能找最近基站。沿 axis=1 在每行的 M 个基站中取最小值索引。距
+离相同时，np.argmin 返回第一个最小值的索引。
+
+原代码有两处错误：内积前应为负号；argmin 应沿 axis=1，才能为每个住址返回一个索引。
+
+
+
+
+                                                        6
+EECS 453 / Homework 1                                                              解答与推导
+
+
+                              附录：完成后的 notebook
+
+以下按原顺序列出全部代码单元及运行输出。原题的检查单元包含参考循环，仅用于验证，不属于答案
+函数。
+
+
+In [1]
+
+import numpy as np
+
+
+rng = np.random.default_rng(453)
+
+
+
+
+In [2]
+
+def row_l1_norms(A):
+    return np.abs(A).sum(axis=1)
+
+
+
+
+In [3]
+
+# --- check (a) ---
+A_test = rng.normal(size=(5, 4))
+
+
+def _ref_row_l1(A):            # slow reference, for checking only -- do not use in your
+   answer
+    return np.array([np.abs(A[i]).sum() for i in range(A.shape[0])])
+
+
+out = row_l1_norms(A_test)
+assert out.shape == (5,), f"expected shape (5,), got {out.shape}"
+assert np.allclose(out, _ref_row_l1(A_test)), "values do not match"
+print("(a) looks correct")
+
+
+实际输出
+(a) looks correct
+
+
+
+
+                                              7
+EECS 453 / Homework 1                                                               解答与推导
+
+
+In [4]
+
+def closest_tower(A, B):
+    a2 = (A**2).sum(axis=1)[None, :]
+    b2 = (B**2).sum(axis=1)[:, None]
+    sq_dists = b2 + a2 - 2 * B @ A.T
+    return np.argmin(sq_dists, axis=1)
+
+
+
+
+In [5]
+
+# --- check (b) ---
+A_towers = rng.normal(size=(7, 3))       # M = 7 towers,   D = 3
+B_homes   = rng.normal(size=(11, 3))     # N = 11 homes
+
+
+def _ref_closest(A, B):         # slow reference, for checking only -- do not use in your
+   answer
+    return np.array([int(np.argmin(((B[i] - A) ** 2).sum(axis=1))) for i in range(B.shape[0])
+   ])
+
+
+out = closest_tower(A_towers, B_homes)
+assert out.shape == (B_homes.shape[0],), f"expected shape {(B_homes.shape[0],)}, got {out.
+   shape}"
+assert np.array_equal(out, _ref_closest(A_towers, B_homes)), "indices are not the nearest
+   towers"
+print("(b) looks correct")
+
+
+实际输出
+(b) looks correct
+
+
+
+
+                                                8
+

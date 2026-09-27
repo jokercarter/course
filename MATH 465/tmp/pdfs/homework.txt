@@ -1,0 +1,59 @@
+                               Math 465: Homework 1
+                           Due: Tuesday, September 8, by 11:59PM
+
+Instructions. Write full and complete solutions to the following problems and submit them on
+Gradescope by the deadline. For each problem, explain the reasoning behind your answer; a formula
+or numerical answer without justification is not a complete solution.
+You may discuss the problems with other students, but you must write up your solutions indepen-
+dently and in your own words. You are not allowed to use generative AI tools, Internet searches, or
+any other external means to directly obtain a solution. Generative AI tools may also not be used
+to proofread your writing or LATEX. If you are unsure about what is or is not permitted, please ask.
+At the beginning of your submission, acknowledge any permitted books, notes, or other sources
+you consulted, and list the names of any students with whom you discussed the homework.
+
+
+1. A palindrome is a string whose reversal is identical to the original string. How many strings of
+   length n over the alphabet {0, 1, 2} are palindromes?
+
+2. How many ways are there to seat seven distinct people around a circular table if two seatings are
+   considered the same whenever every person has the same two neighbors (regardless of whether
+   they are left or right neighbors)?
+
+3. Eight distinct books are arranged in a row on a shelf. Two of the books are Pride and Prejudice
+   and Emma.
+
+   (a) How many arrangements place these two books next to each other?
+   (b) How many arrangements do not place these two books next to each other?
+   (c) How many arrangements place Pride and Prejudice somewhere to the left of Emma?
+
+4. How many six-digit positive integers have no repeated digits?
+
+5. Prove that the number of subsets of [n] that have an odd number of elements is 2n−1 .
+
+6. A club has 13 undergraduate members and 7 graduate-student members. How many ways are
+   there to form a committee of 5 members containing at least one undergraduate and at least one
+   graduate student?
+
+7. Consider the letters in the word
+                                           COMBINATORICS.
+
+   (a) How many distinct arrangements of these letters are there?
+   (b) How many distinct arrangements have the two copies of the letter C in nonconsecutive
+       positions?
+
+8. A class of ten students is divided into five two-person project teams. In how many ways can
+   this be done?
+
+                                                 1
+ 9. A password is an eight-character string formed using uppercase letters and digits. There are 26
+    uppercase letters and 10 digits, and repetition is allowed. How many such passwords contain at
+    least one digit?
+
+10. Let k ≥ 2. How many strings of length n over an alphabet of k characters have no two consecutive
+    characters equal?
+
+
+
+
+                                                  2
+

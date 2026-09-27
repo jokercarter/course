@@ -1,0 +1,135 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\setlist[enumerate,1]{
+    label=\textbf{\arabic*.},
+    leftmargin=*,
+    itemsep=1.1em
+}
+\setlist[enumerate,2]{
+    label=(\alph*),
+    leftmargin=2em,
+    itemsep=0.3em,
+    topsep=0.3em
+}
+
+\newcommand{\duedate}{Tuesday, September 8, by 11:59PM}
+
+\begin{document}
+
+\begin{center}
+    {\Large\bfseries Math 465: Homework 1}\\[4pt]
+    {\large Due: \duedate}
+\end{center}
+
+\hrule
+\vspace{0.8em}
+
+\textbf{Instructions.}
+Write full and complete solutions to the following problems and submit them on Gradescope by the deadline. For each problem, explain the reasoning behind your answer; a formula or numerical answer without justification is not a complete solution.
+
+At the beginning of your submission, acknowledge any permitted books, notes, or other sources you consulted, and list the names of any students with whom you discussed the homework.
+
+\vspace{0.5em}
+\hrule
+\vspace{1em}
+
+\begin{enumerate}
+
+\item
+A \emph{palindrome} is a string whose reversal is identical to the original string. How many strings of length \(n\) over the alphabet $\{0,1,2\}$ are palindromes?
+
+A palindrome is determined only by half of characters. If n is odd, it includes middle one. so there are $3^{\lceil \frac{n}{2} \rceil}$ palindromes.
+
+\item
+How many ways are there to seat seven distinct people around a circular table if two seatings are considered the same whenever every person has the same two neighbors (regardless of whether they are left or right neighbors)?
+
+First we fix one person, and other six people has $6!$ orders. However, because one order and its reversal count twice. So, there are $\frac{6!}{2}=360$ different ways.
+
+\item
+Eight distinct books are arranged in a row on a shelf. Two of the books are \emph{Pride and Prejudice} and \emph{Emma}.
+
+\begin{enumerate}
+    \item How many arrangements place these two books next to each other?
+
+    First combine these two books together and regard them as a huge book. then there are 7 "books". Also, we need to consider the order of the two books. So there are $2\times7!=10080$ different ways.
+    
+    \item How many arrangements do not place these two books next to each other?
+
+    If an order doesn't satisfy (a), then it satisfies (b). So there are $8!-10080=30240$ different ways.
+    
+    \item How many arrangements place \emph{Pride and Prejudice} somewhere to the left of \emph{Emma}?
+
+    By symmetry the number of ways to put Pride and Prejudice to the left of Emma is the same as the way in different order. So there are $\frac{8!}{2}=20160$ ways.
+    
+\end{enumerate}
+
+\item
+How many six-digit positive integers have no repeated digits? 
+
+All digit has 10 ways to choose, however the first digit cannot be 0, so it has 9 choices. We choose digit one by one. The first has 9 choice, the second has 10-1=9 choice, and so on. So there are $9\times9\times8\times7\times6\times5=136080$ numbers.
+
+\item
+Prove that the number of subsets of $[n]$ that have an odd number of elements is $2^{n-1}$.
+
+Consider all the subsets of $[n-1]$, let $S$ is a subset in $[n-1]$, then consider $S$ and $S \cup \{n\}$, exactly one of them has an odd number of elements. There are $2^{n-1}$ of subsets in $[n-1]$. So there are $2^{n-1}$ subsets of $[n]$ that have an odd number of elements.
+
+\item
+A club has \(13\) undergraduate members and \(7\) graduate-student members. How many ways are there to form a committee of \(5\) members containing at least one undergraduate and at least one graduate student?
+
+1 and 4: $\binom{13}{1} \binom{7}{4}$
+
+2 and 3: $\binom{13}{2} \binom{7}{3}$
+
+3 and 2: $\binom{13}{3} \binom{7}{2}$
+
+4 and 1: $\binom{13}{4} \binom{7}{1}$
+
+total: $\binom{13}{1} \binom{7}{4}+\binom{13}{2} \binom{7}{3}+\binom{13}{3} \binom{7}{2}+\binom{13}{4} \binom{7}{1}=14196$
+
+\item
+Consider the letters in the word
+\[
+\texttt{COMBINATORICS}.
+\]
+
+\begin{enumerate}
+    \item How many distinct arrangements of these letters are there?
+
+    It has 13 letters, with 2 C, 2 O,2 I.
+
+    So there are $\frac{13!}{2!2!2!}=778377600$ permutations.
+    
+    \item How many distinct arrangements have the two copies of the letter \(\texttt{C}\) in nonconsecutive positions?
+
+    Consider complement. If two Cs are consecutive, there are $\frac{12!}{2!2!}$ ways. So the complement has $778377600-\frac{12!}{2!2!}=658627200$ ways.
+\end{enumerate}
+
+\item
+A class of ten students is divided into five two-person project teams. In how many ways can this be done?
+
+We choose 2 students for 5 times. So it has $\binom{10}{2}\binom{8}{2}\binom{6}{2}\binom{4}{2}\binom{2}{2}$ ways.
+
+However, we need to consider permutation of groups. For each division, there are $5!$ permutations. 
+
+So there are $\frac{\binom{10}{2}\binom{8}{2}\binom{6}{2}\binom{4}{2}\binom{2}{2}}{5!}=945$ ways.
+
+\item
+A password is an eight-character string formed using uppercase letters and digits. There are \(26\) uppercase letters and \(10\) digits, and repetition is allowed. How many such passwords contain at least one digit?
+
+Consider the complement. If all characters are letters, then it has $26^8$ ways. In total, it has $36^8$ ways. So there are $36^8-26^8=2612282842880$ passwords that contain at least one digit.
+
+\item
+Let \(k\geq 2\). How many strings of length \(n\) over an alphabet of \(k\) characters have no two consecutive characters equal?
+
+Choose these n characters one by one. First character has k choices. After that, each character is different from the previous one, which has k-1 choices. So there are $k(k-1)^{n-1}$ strings that have no two conscutive characters equal.
+
+\end{enumerate}
+
+\end{document}

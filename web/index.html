@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#101714"><title>知序 · 四门课程复习工作台</title>
+ <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+ <link rel="stylesheet" href="/vendor/katex/katex.min.css"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/dark.css">
+ <script defer src="/vendor/katex/katex.min.js"></script><script type="module" src="/app.js"></script>
+</head>
+<body>
+ <a class="skip" href="#main">跳到正文</a>
+ <aside id="sidebar" class="sidebar" aria-label="主导航"></aside>
+ <div class="workspace">
+  <header class="topbar"><button id="menu" class="icon-button" aria-label="展开导航" aria-expanded="false">☰</button><div class="top-label">你的学习空间 <span>/</span> <span id="breadcrumb">总览</span></div><form id="search-form" role="search"><label class="sr-only" for="search">搜索所有课程</label><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜索知识点、公式、英文术语…" autocomplete="off"><button type="submit" aria-label="搜索">↵</button></form><span class="local-badge"><i></i> 本地 · 离线可用</span></header>
+  <div class="language-control"><button type="button" id="language-toggle" aria-label="Switch to Chinese" lang="zh-CN">中文</button></div>
+  <main id="main" tabindex="-1"><div class="loading">Opening your study workspace…</div></main>
+  <footer>知序 STUDY DESK <span>学习笔记依据本地资料整理 · 原始资料保留在课程文件夹</span></footer>
+ </div>
+ <div id="toast" role="status" aria-live="polite"></div>
+ <noscript>请启用 JavaScript，并通过 start.cmd 启动本地网站。</noscript>
+</body>
+</html>

@@ -1,0 +1,102 @@
+/* Screen theme. Print retains the existing paper-friendly palette. */
+@media screen {
+ :root { color-scheme:dark; --paper:#101714; --ink:#f0f5ef; --text:#e0e8df; --muted:#bdcbbd; --line:#35463b; --green:#9ed3ad; --accent:#b5d5a0; }
+ body { background:var(--paper); color:var(--text); }
+ h1,h2,h3 { color:var(--ink); }
+ .sidebar { background:#16201a; border-color:var(--line); }
+ .topbar { background:#101714f5; border-color:var(--line); }
+ .brand { color:#e4f4de; }
+ .brand-mark { background:#365c42; color:#f1f7e8; box-shadow:none; }
+ .primary-nav a,.course-nav-item,.chapter-nav a { color:#d2dfce; }
+ .primary-nav a.active,.course-nav-item.selected,.primary-nav a:hover,.course-nav-item:hover { background:#2c4232; color:#f0f8eb; }
+ .chapter-nav a.selected { color:#bef0b4; }
+ .chapter-nav { border-color:#40543d; }
+ .sidebar-caption,.course-nav-item small,.nav-arrow,.sidebar-bottom p,.sidebar-bottom>div,.tiny-label,.chapter-nav a span { color:#bacdb2; }
+ .sidebar-bottom>div { border-color:var(--line); }
+ .top-label,.top-label>span:first-child,#breadcrumb,.local-badge { color:#bfceba; }
+ #search-form,select { background:#1c2a21; border-color:#4c6251; color:#eef4e8; }
+ #search { color:#eef4e8; }
+ #search::placeholder { color:#b7c6b2; opacity:1; }
+ #search-form button { background:#304035; color:#e3edda; border-color:#53694d; }
+ #language-toggle { background:#304833; border-color:#719a69; color:#edffe4; }
+ #language-toggle:hover { background:#405e44; }
+ .icon-button { color:#e4f2dc; }
+ .menu-open .icon-button { background:#304833; }
+ .button,.skip { background:#26382b; border-color:#607555; color:#edf5e5; }
+ .button:hover { background:#374c37; }
+ .button.primary { background:#a8d7a2; border-color:#a8d7a2; color:#132818; }
+ .button.primary:hover { background:#bee9b7; color:#132818; }
+ .text-button { color:#c4d7bb; }
+ .eyebrow,.muted,.hero .eyebrow,.hero-note,.hero p,.section-heading .muted { color:#bdcbb1; }
+ .hero h1>span { color:#b2d99a; }
+ .hero-map { background:linear-gradient(145deg,#223323,#17251c); border-color:#4a6240; box-shadow:7px 8px 0 #080e0a; }
+ .map-label,.map-bottom { color:#bed2a8; border-color:#435738; }
+ .map-step>span,.map-step i { color:#b0d38d; }
+ .map-step>div { color:#edf4e1; }
+ .map-step small { color:#becdac; }
+ .stats,.section-heading { border-color:var(--line); }
+ .stats>div { border-color:var(--line); }
+ .stats strong { color:#d7edbd; }
+ .stats span,.stats strong small { color:#bdcdb0; }
+ .course-card,.chapter-card,.formula-card,.example,.quiz,.resource-list,.source-link { background:#1b2820; border-color:#3b4e3c; }
+ .course-card:hover,.chapter-card:hover,.source-link:hover { border-color:#acd294; box-shadow:0 8px 24px #0003; }
+ .course-symbol,.course-badge { background:#30412e; color:#dbefb9; }
+ .course-dot { background:color-mix(in srgb,var(--course) 45%,#e6f7d5); }
+ .card-top .pill,.course-toolbar .pill,.pill { background:#30422d; color:#dcecc7; }
+ .card-code,.chapter-card .eyebrow,.reader-heading .eyebrow { color:color-mix(in srgb,var(--course) 30%,#f0f8dc); }
+ .card-arrow,.course-card>p,.card-topics,.progress-label,.progress-label strong,.chapter-card p,.meta,.status { color:#c2d0b8; }
+ .card-topics { border-color:var(--line); }
+ .progress-track,.course-summary .progress-track { background:#40543b; }
+ .progress-track>div { background:#b8da93; }
+ .chapter-number { color:#d7eab9; opacity:1; }
+ .status.mastered { color:#d9f4b8; background:#334c2c; }
+ .status.learning { color:#f0d59b; }
+ .note-panel,.pending-panel,.notice,.course-summary,.filters,.search-result,.empty { background:#213121; border-color:#43583c; color:#c8d7bc; }
+ .note-panel h3,.note-panel.dark h3 { color:#f0f5e7; }
+ .note-panel p,.note-panel.dark p,.note-panel.dark .eyebrow { color:#c0d0b3; }
+ .note-panel a,.note-panel.dark a,.course-toolbar a,.outline-source { color:#cceba8; }
+ .note-panel.dark { background:#243e2b; }
+ .page-heading p,.page-heading h1 small,.pending-panel>p,.pending-row,.pending-row small { color:#c2d1b6; }
+ .pending-row { border-color:#43583c; }
+ .course-summary strong { color:#e0f3c3; }
+ .reader-deck,.back-link,.progress-select,.editor-note,.prereq,.prereq strong,.section-intro,.bilingual-subtitle { color:#c1d0b3; }
+ .reader-heading,.reading-next { border-color:var(--line); }
+ .reading-content h2>span,.concept h3 span { color:#c4dda0; }
+ .goals,.proof,.terminology { background:#243724; border-color:#506d42; color:#e1edcf; }
+ .concept p,.proof p,.steps li { color:#e0e8d8; font-size:18px; }
+ .goals { font-size:17px; }
+ .proof .eyebrow,.example>.eyebrow,.quiz-label { color:#d0dfad; }
+ .formula-card>p { color:#c8d6bc; border-color:#40533a; }
+ .formula-card .eyebrow { color:#bcd5a6; }
+ .math { color:#f0f5e9; }
+ .steps li:before { border-color:#657e51; color:#d4e9b5; }
+ .pitfalls { background:#342e20; border-color:#73603d; }
+ .pitfalls p,.pitfalls p>span { color:#f1dba9; }
+ .quiz details { border-color:#40533a; }
+ .quiz summary,.quiz .answer summary { color:#cfedac; }
+ .quiz details p { background:#293d25; color:#e8f2da; }
+ .quiz .hint p { background:#353323; color:#f0e7c3; }
+ .mastery-prompt { background:#2a4228; }
+ .mastery-prompt p { color:#c6d8b3; }
+ .source-link { color:#e1efce; }
+ .source-link small,.resource-row p,.resource-row small,.resource-row details { color:#bacbad; }
+ .file-icon { background:#304329; color:#d5edb6; border-color:#526c42; }
+ .resource-row { border-color:#354832; }
+ .resource-row a,.reading-next a { color:#d1ebb0; }
+ .reading-next small,.toc a,.toc a>span,.toc-note { color:#c1d1b0; }
+ .toc a:hover { color:#edffd9; }
+ .toc,.toc-note { border-color:#405638; }
+ .terminology>p,.terminology dt span:last-child,.terminology dd { color:#ccdabd; }
+ .terminology dt span:first-child { color:#edf6dc; }
+ .terminology dl>div { border-color:#48603c; }
+ .search-excerpt,.empty p,.empty>span,.loading { color:#c4d4b2; }
+ footer { color:#b9c8a9; border-color:#354832; }
+ #toast { background:#c3e0ae; color:#162918; }
+ ::selection { background:#adcba0; color:#112116; }
+ :focus-visible { outline-color:#e0ef9c!important; }
+ @media(max-width:700px){.concept p,.proof p,.steps li{font-size:17px}.menu-open:after{background:#0008}}
+ .formula-grid{min-width:0;grid-template-columns:repeat(2,minmax(0,1fr))}
+ @media(max-width:1200px){.formula-grid{grid-template-columns:minmax(0,1fr)}}
+ .filters label{min-width:0}.filters select{max-width:100%}
+ .math{contain:paint;min-width:0}
+}

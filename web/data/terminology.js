@@ -1,0 +1,43 @@
+// Standard disciplinary terminology, paired with the Chinese used in the notes.
+// Entries: chapter English title, then Chinese | English | contextual definition.
+const entries = {
+ 'eecs376/analysis':['Input Size, Asymptotic Analysis, and Euclid’s Algorithm','输入大小|Input size|输入编码的长度，而非整数的数值大小。','渐近上界|Asymptotic upper bound|用 O 记号描述增长率的上界。','紧界|Tight bound|同时成立的渐近上界与下界，通常用 Θ 表示。','不变量|Invariant|算法执行过程中始终成立的性质。'],
+ 'eecs376/potential':['The Potential Method and Divide and Conquer','势函数|Potential function|将算法状态映射到可分析的数值。','分治|Divide and conquer|拆分子问题、递归求解并合并。','归并排序|Merge sort|利用线性合并步骤的分治排序算法。','递归树|Recursion tree|展开递推调用并累计各层代价的表示。'],
+ 'eecs376/divide-conquer':['The Master Theorem, Karatsuba Multiplication, and Closest Pair','主定理|Master theorem|分析特定分治递推渐近复杂度的定理。','递推|Recurrence relation|用较小规模的函数值定义当前值的关系。','最近点对|Closest pair of points|寻找距离最小的一对点。','合并步骤|Combine step|由子问题的解构造原问题解的阶段。'],
+ 'eecs376/dp-one':['Dynamic Programming: Weighted Interval Scheduling and LIS','动态规划|Dynamic programming (DP)|保存子问题答案，避免重复计算。','带权任务选择|Weighted interval scheduling|选择互不冲突且总权重最大的区间集合。','记忆化|Memoization|缓存递归计算出的子问题答案。','最优子结构|Optimal substructure|最优解包含相应子问题的最优解。','严格递增子序列|Strictly increasing subsequence|保持原下标顺序，且相邻所选值严格增大的子序列。'],
+ 'eecs376/dp-two':['Two-Dimensional DP: LCS and 0/1 Knapsack','最长公共子序列|Longest common subsequence (LCS)|保持相对顺序、但不要求连续的公共序列。','0/1 背包|0/1 knapsack|每件物品至多取一次的容量约束优化问题。','伪多项式|Pseudopolynomial|对数值参数为多项式，但对其编码长度未必为多项式。','状态转移|State transition|从已求解状态计算新状态的规则。'],
+ 'eecs376/graph-dp':['Shortest-Path DP: Bellman–Ford and Floyd–Warshall','单源最短路|Single-source shortest paths (SSSP)|从一个源点到所有顶点的最短路问题。','所有点对最短路|All-pairs shortest paths (APSP)|计算每一对顶点之间的最短距离。','负环|Negative-weight cycle|边权总和为负的环。','松弛|Relaxation|利用候选路径改善当前距离估计的操作。'],
+ 'eecs376/greedy':['Greedy Algorithms, Exchange Arguments, and Minimum Spanning Trees','贪心|Greedy algorithm|逐步固定局部最优选择的算法策略。','交换论证|Exchange argument|通过替换最优解中的选择来证明算法正确。','最小生成树|Minimum spanning tree (MST)|连接全部顶点且总边权最小的树。','并查集|Disjoint-set union (DSU)|维护互不相交集合并支持合并与查询的数据结构。'],
+ 'eecs453/learning':['Learning Problems, Empirical Risk, and Generalization','经验风险|Empirical risk|样本上的平均损失。','总体风险|Population risk|真实数据分布下的期望损失。','泛化|Generalization|模型在未见样本上保持有效预测的能力。','交叉验证|Cross-validation|轮换训练与验证划分的模型选择方法。','数据泄漏|Data leakage|训练或选择过程使用了本应隔离的评价信息。'],
+ 'eecs453/math':['Linear Algebra, Probability, and Matrix Calculus','满列秩|Full column rank|矩阵所有列线性无关。','正半定|Positive semidefinite (PSD)|对称矩阵的二次型对任意向量非负。','协方差|Covariance|衡量两个随机变量共同变化的量。','梯度|Gradient|标量函数所有一阶偏导数组成的向量。'],
+ 'eecs453/regression':['Least Squares, Maximum Likelihood, and Regularization','最小二乘|Least squares (LS)|以残差平方和为目标的估计方法。','最大似然估计|Maximum likelihood estimation (MLE)|选择使观测数据似然最大的参数。','正则化|Regularization|通过惩罚或约束控制模型复杂度。','岭回归|Ridge regression|使用平方 L2 惩罚的回归方法。','伪逆|Moore–Penrose pseudoinverse|将逆矩阵思想推广到非方阵或奇异矩阵。'],
+ 'eecs453/classification':['Bayes Classification, LDA, and Logistic Regression','后验概率|Posterior probability|给定观测后更新得到的概率。','线性判别分析|Linear discriminant analysis (LDA)|使用共享协方差高斯类条件模型的分类方法。','逻辑回归|Logistic regression|直接建模类别条件概率的判别式模型。','交叉熵|Cross-entropy|用目标分布评价预测分布的损失。','判别式|Discriminative|直接建模决策边界或标签条件分布。'],
+ 'eecs453/optimization':['Convexity, Gradient Descent, and Newton’s Method','凸性|Convexity|函数在两点连线上的值不超过函数值的线性插值。','梯度下降|Gradient descent (GD)|沿负梯度方向更新参数。','随机梯度下降|Stochastic gradient descent (SGD)|用随机样本梯度估计进行更新。','Hessian|Hessian matrix|二阶偏导数组成的矩阵。','回溯|Backtracking line search|逐步缩小步长以满足下降条件。'],
+ 'eecs453/duality':['Constrained Optimization, Lagrangian Duality, and KKT Conditions','拉格朗日函数|Lagrangian|将目标与带乘子的约束组合的函数。','弱对偶|Weak duality|最小化问题的对偶最优值不超过原始最优值。','互补松弛|Complementary slackness|不等式约束值与相应乘子的乘积为零。','约束资格|Constraint qualification|保证最优性条件等结论的约束正则性条件。','KKT|Karush–Kuhn–Tucker (KKT) conditions|驻点、原始可行、对偶可行和互补松弛条件。'],
+ 'eecs453/rl-dp':['Reinforcement Learning: Bellman Equations and Stochastic DP','强化学习|Reinforcement learning (RL)|通过交互奖励学习决策策略。','策略|Policy|根据状态或历史选择动作的规则或分布。','回报|Return|累计的、可能折扣后的奖励。','折扣因子|Discount factor|调整未来奖励相对权重的参数。'],
+ 'eecs453/rl-values':['Value Iteration, Q-Learning, and SARSA','价值迭代|Value iteration|反复应用 Bellman 最优算子的规划方法。','策略迭代|Policy iteration|交替执行策略评估与策略改进。','时序差分|Temporal difference (TD)|利用一步反馈和下一状态估计构造更新误差。','异策略|Off-policy|目标策略与生成数据的行为策略可以不同。','同策略|On-policy|针对正在执行的策略进行学习。'],
+ 'eecs453/rl-deep':['Deep Q-Networks and Actor–Critic Methods','经验回放|Experience replay|从保存的交互转移中抽样训练。','目标网络|Target network|暂时固定、用于构造学习目标的网络。','优势|Advantage|动作价值相对于状态价值的差。','策略梯度|Policy gradient|对参数化策略的期望回报求梯度。','基线|Baseline|用于降低策略梯度估计方差的参照值。'],
+ 'eecs492/agents':['Rational Agents, PEAS, and Task Environments','理性智能体|Rational agent|根据已有信息选择期望绩效较好动作的系统。','感知|Percept|智能体从传感器接收到的信息。','执行器|Actuator|智能体作用于环境的机制。','部分可观察|Partially observable|感知不足以确定完整环境状态。','绩效指标|Performance measure|评价智能体行为结果的标准。'],
+ 'eecs492/math':['Vectors, the Chain Rule, and Probability','点积|Dot product|对应向量分量乘积的和。','链式法则|Chain rule|计算复合函数导数的规则。','条件概率|Conditional probability|在给定事件发生的条件下定义的概率。','随机变量|Random variable|将样本空间中的结果映射到数值的函数。'],
+ 'eecs492/ml':['Machine Learning, k-Means, kNN, and Validation','聚类|Clustering|根据相似性组织无标签数据。','簇中心|Cluster centroid|k-means 中以簇内样本均值定义的中心。','k近邻|k-nearest neighbors (kNN)|依据最近的 k 个带标签样本进行预测。','偏差方差权衡|Bias–variance tradeoff|平衡系统偏差与对训练样本变化的敏感性。'],
+ 'eecs492/trees':['Decision Trees, Information Gain, and Ensemble Methods','决策树|Decision tree|通过递归特征测试进行预测的树形模型。','信息增益|Information gain|划分前熵减去加权条件熵。','熵|Entropy|离散分布不确定性的度量。','集成|Ensemble learning|组合多个模型的预测。','有放回抽样|Sampling with replacement|抽中的样本仍可在后续再次抽中。','随机森林|Random forest|结合样本抽样和特征随机化的树集成。'],
+ 'eecs492/regression':['Linear Regression, Gradient-Based Learning, and Model Evaluation','线性回归|Linear regression|对参数线性地建模连续响应。','残差|Residual|观测值与拟合值之差。','截距|Intercept|输入特征为零时的模型常数项。','决定系数|Coefficient of determination (R²)|相对于均值基线衡量拟合误差的统计量。'],
+ 'eecs492/neural':['Neural Networks, Cross-Entropy, and Backpropagation','前馈网络|Feedforward neural network|信息从输入向输出单向传播的网络。','激活函数|Activation function|对神经元加权输入施加的函数。','反向传播|Backpropagation|沿计算图反向高效计算梯度。','逐元素乘|Hadamard product|两个同形数组对应元素相乘。','logit|Logit|二分类中概率的对数几率，也指 sigmoid 前的实值输出。'],
+ 'eecs492/cnn':['Convolutional Neural Networks and Pooling','卷积神经网络|Convolutional neural network (CNN)|利用局部连接与共享滤波器处理结构化数据的网络。','参数共享|Parameter sharing|多个计算位置使用同一组可学习参数。','步长|Stride|滑动窗口相邻位置之间的间隔。','填充|Padding|在输入边界增加数值以控制尺寸和边界处理。','池化|Pooling|汇总局部区域激活的操作。'],
+ 'math465/counting':['Counting Principles and Permutations','加法原则|Addition principle|对互斥且完备的类别求和。','乘法原则|Multiplication principle|计数分阶段完成的选择。','除法原则|Division principle|在每个对象被重复相同次数时除去重复。','排列|Permutation|对不同元素进行有序安排。','多重集|Multiset|允许元素重复并记录重数的集合推广。'],
+ 'math465/binomial':['Binomial Coefficients, Lattice Paths, and Stars and Bars','二项式系数|Binomial coefficient|从 n 个不同对象中无序选择 k 个的数目。','格点路径|Lattice path|按指定步长在整数格点之间移动的路径。','隔板法|Stars and bars|用星和隔板编码非负或正整数组成。','弱组成|Weak composition|允许零部分的有序整数分解。','正组成|Composition into positive parts|各部分均为正整数的有序分解。'],
+ 'math465/identities':['Combinatorial Identities and the Generalized Binomial Theorem','双重计数|Double counting|用两种方式计数同一集合以证明等式。','双射|Bijection|既单射又满射的一一对应。','广义二项式定理|Generalized binomial theorem|将二项式展开推广到非整数指数。','系数提取|Coefficient extraction|从多项式或形式幂级数中取指定次数的系数。'],
+ 'math465/generating':['Generating Functions and Weight Enumerators','普通生成函数|Ordinary generating function (OGF)|以序列项作为 x 的相应次幂系数。','形式幂级数|Formal power series|以代数系数运算为核心、不要求数值收敛的级数。','权重|Weight|赋予组合对象、用于分类计数的非负整数统计量。','卷积|Convolution|乘积系数中对下标和固定的项求和。'],
+ 'math465/permutation-stats':['Permutation Statistics: Inversions and Cycles','逆序|Inversion|位置先后顺序与数值大小顺序相反的一对元素。','循环表示|Cycle notation|通过映射的循环轨道表示置换。','第一类无符号 Stirling 数|Unsigned Stirling numbers of the first kind|按循环数计数排列。','排列统计量|Permutation statistic|从排列映射到数值的特征，例如逆序数。'],
+ 'math465/stirling':['Stirling Numbers, Change of Basis, and Summation','第二类 Stirling 数|Stirling numbers of the second kind|计数非空无标签集合分块。','下降阶乘|Falling factorial|连续递减因子的乘积。','集合划分|Set partition|把集合分为非空、不相交且并为全集的块。','满射|Surjection|每个目标元素都有原像的映射。'],
+ 'math465/recurrences':['Linear Recurrences, Fibonacci Numbers, and Repeated Roots','常系数齐次递推|Homogeneous linear recurrence with constant coefficients|各项线性组合为零且系数不随下标变化。','特征方程|Characteristic equation|代入几何序列试探解后得到的多项式方程。','重根|Repeated root|在特征多项式中重数大于一的根。','初始条件|Initial conditions|用于确定递推唯一解的起始值。','闭式|Closed-form expression|不依赖逐项递推的显式表达式。']
+};
+
+export function attachTerminology(courses){
+ for(const course of courses)for(const lesson of course.lessons){
+  const entry=entries[`${course.id}/${lesson.id}`];
+  if(!entry)throw Error(`Missing terminology: ${course.id}/${lesson.id}`);
+  lesson.english=entry[0];
+  lesson.terms=entry.slice(1).map(line=>{const [zh,en,definition]=line.split('|');return {zh,en,definition};});
+ }
+}

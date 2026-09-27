@@ -1,0 +1,57 @@
+\section*{附录：完成后的 notebook}
+以下按原顺序列出全部代码单元及运行输出。原题的检查单元包含参考循环，仅用于验证，不属于答案函数。
+\subsection*{In [1]}
+\begin{lstlisting}[language=Python]
+import numpy as np
+
+rng = np.random.default_rng(453)
+\end{lstlisting}
+\subsection*{In [2]}
+\begin{lstlisting}[language=Python]
+def row_l1_norms(A):
+    return np.abs(A).sum(axis=1)
+\end{lstlisting}
+\subsection*{In [3]}
+\begin{lstlisting}[language=Python]
+# --- check (a) ---
+A_test = rng.normal(size=(5, 4))
+
+def _ref_row_l1(A):            # slow reference, for checking only -- do not use in your answer
+    return np.array([np.abs(A[i]).sum() for i in range(A.shape[0])])
+
+out = row_l1_norms(A_test)
+assert out.shape == (5,), f"expected shape (5,), got {out.shape}"
+assert np.allclose(out, _ref_row_l1(A_test)), "values do not match"
+print("(a) looks correct")
+\end{lstlisting}
+\textbf{实际输出}
+\begin{lstlisting}
+(a) looks correct
+\end{lstlisting}
+\newpage
+\subsection*{In [4]}
+\begin{lstlisting}[language=Python]
+def closest_tower(A, B):
+    a2 = (A**2).sum(axis=1)[None, :]
+    b2 = (B**2).sum(axis=1)[:, None]
+    sq_dists = b2 + a2 - 2 * B @ A.T
+    return np.argmin(sq_dists, axis=1)
+\end{lstlisting}
+\subsection*{In [5]}
+\begin{lstlisting}[language=Python]
+# --- check (b) ---
+A_towers = rng.normal(size=(7, 3))     # M = 7 towers,  D = 3
+B_homes  = rng.normal(size=(11, 3))    # N = 11 homes
+
+def _ref_closest(A, B):        # slow reference, for checking only -- do not use in your answer
+    return np.array([int(np.argmin(((B[i] - A) ** 2).sum(axis=1))) for i in range(B.shape[0])])
+
+out = closest_tower(A_towers, B_homes)
+assert out.shape == (B_homes.shape[0],), f"expected shape {(B_homes.shape[0],)}, got {out.shape}"
+assert np.array_equal(out, _ref_closest(A_towers, B_homes)), "indices are not the nearest towers"
+print("(b) looks correct")
+\end{lstlisting}
+\textbf{实际输出}
+\begin{lstlisting}
+(b) looks correct
+\end{lstlisting}

@@ -1,0 +1,263 @@
+\RequirePackage{microtype}
+\RequirePackage{mathtools}
+\RequirePackage{amsthm}
+\RequirePackage{amssymb}
+\RequirePackage{xspace}
+\RequirePackage[shortlabels]{enumitem}
+\RequirePackage{xcolor}
+\RequirePackage{hyperref}
+\RequirePackage[capitalize,nameinlink,noabbrev]{cleveref} % must load after hyperref
+\usepackage{fvextra} % To use Verbatim
+\usepackage{diagbox} % For diagbox
+\RequirePackage[boxed]{algorithm}
+\RequirePackage[noend]{algpseudocode}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows,automata,positioning}
+
+\hypersetup{breaklinks=true,
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,
+    citecolor=blue,
+    urlcolor=blue}
+
+\algrenewcommand{\algorithmiccomment}[1]{\texttt{//} #1}
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+
+
+% allow cleveref to label and reference enumerables defined in the exam class.
+% these automatically define corresponding \Crefname as well.
+
+% https://tex.stackexchange.com/questions/126020/cleveref-doesnt-use-correct-capitalized-name-if-used-with-amsthm
+\makeatletter
+\if@cref@capitalise
+\crefname{question}{Question}{Questions}
+\Crefname{partno}{Part}{Parts}
+\crefname{subpart}{Subpart}{Subparts)}
+\crefname{subsubpart}{Subsubpart}{Subsubparts}
+\else
+\crefname{question}{question}{questions}
+\crefname{partno}{part}{parts}
+\crefname{subpart}{subpart}{subparts}
+\crefname{subsubpart}{subsubpart}{subsubparts}
+\fi
+\makeatother
+
+% numeric sets in "blackboard" font
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Prop}{\mathbb{P}}
+
+% paired delimiters
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\length{\lVert}{\rVert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\parens{(}{)}
+\DeclarePairedDelimiter\tuple{(}{)}
+\DeclarePairedDelimiter\brackets{[}{]}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\round{\lfloor}{\rceil}
+\DeclarePairedDelimiter\set{\{}{\}}
+\DeclarePairedDelimiter\inner{\langle}{\rangle}
+
+\newcommand{\bit}{\set{0,1}}
+
+% asymptotics
+
+\DeclareMathOperator{\Otil}{\tilde{O}}
+\DeclareMathOperator{\poly}{poly}
+\DeclareMathOperator{\polylog}{polylog}
+\DeclareMathOperator{\negl}{negl}
+
+% algorithms
+
+\newcommand{\algo}[1]{\textsc{#1}}
+
+\newcommand{\memo}{\text{memo}}
+\newcommand{\tabl}{\text{table}}
+\newcommand{\backtrack}{\text{backtrack}}
+
+\newcommand{\ALG}{\text{ALG}}
+\newcommand{\OPT}{\text{OPT}}
+\newcommand{\weight}{\text{weight}}
+\newcommand{\val}{\text{value}}
+
+% computability
+
+% named language
+\newcommand{\lang}[1]{L_{\text{#1}}}
+% computational problem
+\newcommand{\cproblem}[1]{\ensuremath{\text{#1}}\xspace}
+% class of languages
+\newcommand{\class}[1]{\ensuremath{\mathsf{#1}}\xspace}
+
+\newcommand{\qst}{q_{\text{start}}}
+\newcommand{\qacc}{q_{\text{acc}}}
+\newcommand{\qrej}{q_{\text{rej}}}
+
+\newcommand{\Lbarber}{\lang{BARBER}}
+\newcommand{\atm}{\lang{ACC}}
+\newcommand{\htm}{\lang{HALT}}
+\newcommand{\ehtm}{\lang{$\varepsilon$-HALT}}
+\newcommand{\eqtm}{\lang{EQ}}
+\newcommand{\etm}{\lang{$\emptyset$}}
+\newcommand{\epstm}{\lang{$\set{\varepsilon}$}}
+\newcommand{\Lprop}{\lang{$\Prop$}}
+\newcommand{\LSigmastar}{\lang{$\Sigma^*$}}
+
+% complexity
+
+\newcommand{\yes}{\ensuremath{\text{YES}}}
+\newcommand{\no}{\ensuremath{\text{NO}}}
+
+\newcommand{\DTIME}{\class{DTIME}}
+\renewcommand{\P}{\class{P}}
+\newcommand{\NP}{\class{NP}}
+\newcommand{\NPH}{\class{NPH}}
+\newcommand{\NPC}{\class{NPC}}
+\newcommand{\coNP}{\class{coNP}}
+
+\newcommand{\MAZE}{\cproblem{MAZE}}
+\newcommand{\PALINDROME}{\cproblem{PALINDROME}}
+\newcommand{\TSP}{\cproblem{TSP}}
+\newcommand{\SAT}{\cproblem{SAT}}
+\newcommand{\CSAT}{\cproblem{CSAT}}
+\newcommand{\TSAT}{\cproblem{3SAT}}
+\newcommand{\VC}{\cproblem{VERTEX-COVER}}
+\newcommand{\DS}{\cproblem{DOMINATING-SET}}
+\newcommand{\SC}{\cproblem{SET-COVER}}
+\newcommand{\HC}{\cproblem{HAMCYCLE}}
+\newcommand{\HP}{\cproblem{HAMPATH}}
+\newcommand{\AHP}{\cproblem{ANYHAMPATH}}
+\newcommand{\IS}{\cproblem{IS}}
+\newcommand{\CLIQUE}{\cproblem{CLIQUE}}
+\newcommand{\SSUM}{\cproblem{SUBSET-SUM}}
+\newcommand{\KNAPSACK}{\cproblem{KNAPSACK}}
+\newcommand{\MAXCUT}{\cproblem{MAX-CUT}}
+
+% randomness
+
+\DeclareMathOperator*{\Var}{Var}
+\DeclareMathOperator*{\Ex}{\mathbb{E}}
+
+\newcommand{\RP}{\class{RP}}
+\newcommand{\coRP}{\class{coRP}}
+\newcommand{\BPP}{\class{BPP}}
+\newcommand{\ZPP}{\class{ZPP}}
+\newcommand{\BQP}{\class{BQP}}
+
+%%% misc
+
+\newcommand{\eps}{\varepsilon}
+
+%%% theorems
+
+\theoremstyle{plain}            % following are "theorem" style
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{openproblem}[theorem]{Open Problem}
+
+\theoremstyle{definition}       % following are def style
+
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{protocol}[theorem]{Protocol}
+\newtheorem{exercise}[theorem]{Exercise}
+
+\theoremstyle{remark}           % following are remark style
+
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{note}[theorem]{Note}
+
+%%% for homework and section notes
+
+\newcommand{\commonheader}[2]{
+    \pagestyle{headandfoot}
+    \setlength{\headheight}{26pt}
+    \setlength{\headsep}{16pt}
+
+    \header
+        {\small{\textbf{EECS 376: Foundations of Computer Science}} \\ \footnotesize{\textbf{University of Michigan, Fall 2026}}}
+        {#1}
+        {#2}
+
+    \firstpageheadrule
+    \runningheadrule
+
+    \footer
+        {}
+        {\thepage}
+        {}
+}
+
+\newcommand{\hwheader}{
+    \commonheader
+        {\Large \textbf{Homework \hwnum}}
+        {\small \textbf{Due 8:00pm, \duedate\\ {\tiny(accepted until 10:00 pm, no credit after)}}}
+}
+
+\newcommand{\hwslnheader}{
+    \commonheader
+    	{}
+        {\Large \textbf{Solutions to Homework \hwnum}}
+    \printanswers
+}
+
+\newcommand{\notesheader}{
+    \commonheader
+    	{}
+        {\Large \textbf{Discussion Notes \sectionnum}}
+}
+
+\newcommand{\practiceheader}{
+    \commonheader
+    	{}
+        {\Large \textbf{Discussion Worksheet \sectionnum}}
+}
+
+\newcommand{\practiceslnheader}{
+    \commonheader
+    	{}
+        {\Large \textbf{Solutions to Discussion Worksheet \sectionnum}}
+}
+
+\newcommand{\reviewheader}{
+    \commonheader 
+    \smallskip
+    	{}
+        {\Large \textbf{Midterm Review Notes}}
+}
+
+\newcommand{\hwpreface}{
+
+\noindent This homework has \numquestions\ questions, for a total of \numpoints\ points and \numbonuspoints\ extra-credit points.
+
+\noindent Unless otherwise stated, each question requires \emph{clear}, \emph{logically correct}, and \emph{sufficient} justification to convince the reader.
+
+\noindent We strongly encourage you to typeset your solutions in \LaTeX.
+
+}
+
+\newcommand{\hint}[1]{
+\emph{Hint}: #1
+}
+
+% exam class setup
+\pointsinmargin
+\pointpoints{pt}{pts}
+\bonuspointpoints{EC pt}{EC pts}
+\marginpointname{ \points}
+\marginbonuspointname{ \bonuspoints}
