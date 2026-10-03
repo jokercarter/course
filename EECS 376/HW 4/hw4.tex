@@ -1,24 +1,15 @@
-% ADD/REMOVE THE 'answers' OPTION TO INCLUDE/SUPPRESS SOLUTIONS
-\documentclass[11pt,addpoints]{exam}
-% \documentclass[11pt,addpoints,answers]{exam}
+\documentclass[11pt,addpoints,answers]{exam}
 
 \newcommand{\hwnum}{4}
 \newcommand{\duedate}{September 30}
 
-% In order to compile this file you will need to get 'header.tex'
-% and make the line below point to the appropriate file path
 \input{header}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning}
 
-\ifprintanswers
-\hwslnheader   % header for solutions
-\else
-\hwheader   % header for homework
-\fi
+\hwslnheader
 
 \begin{document}
-
 
 \hwpreface
 
@@ -27,14 +18,11 @@
   \addtocounter{question}{-1}
   \question \textbf{Before you start; before you submit.}
 
-      
+  If applicable, state the name(s) and uniqname(s) of your collaborator(s).
 
-    If applicable, state the name(s) and uniqname(s) of your collaborator(s).
-
-    \begin{solution}
-       
-    \end{solution}
-
+  \begin{solution}
+  No collaborators.
+  \end{solution}
 
 \question[10] \textbf{Self assessment.} \nopagebreak
   Carefully read and understand the posted solutions to the previous homework.
@@ -46,297 +34,465 @@
   If you didn't do last week's homework, choose a problem from it that looks challenging to you, and in a few sentences, explain the key ideas behind its solution in your own words.
 
   \begin{solution}
-
-  
-  
-        % Easter egg for those using LaTeX!
-        % Here's how you can insert an image in LaTeX, in case you need to include a screenshot
-        % \includegraphics[width=0.5\linewidth]{waquackquack.jpg} % Adjust the dimension as you need
-        
+  I chose the minimum-subarray-product problem from the previous homework as a
+  useful example to reflect on.  The key observation is that every nonempty
+  subarray ending at position $i$ is either the one-element subarray $[A_i]$,
+  or is obtained by appending $A_i$ to a subarray ending at $i-1$.  Thus, if
+  $E_i$ denotes the smallest product of a nonempty subarray ending at $i$,
+  then
+  \[
+      E_i=\min\{A_i,\,E_{i-1}A_i\}.
+  \]
+  The answer is $\min_i E_i$.  A solution can be improved by explicitly
+  separating the local state $E_i$ from the global answer, stating the base
+  case $E_1=A_1$, and explaining why the two cases above exhaust all
+  subarrays ending at $i$.  That organization makes both correctness and the
+  $O(n)$ running time immediate.
   \end{solution}
 
-\question \textbf{Fixed-color-sequence paths.} 
-% \jrnote{Graph DP question from W24}
-% \fxnote{In the future say the graph representation is adjacency list}
-    
- 
-  Let $G=(V,E)$ be an undirected graph with~$n$ vertices and~$m$ edges, where $m \geq n$.
-  Also, suppose that each edge is colored either black or white.
-  We say that a path $P=(e_{1},\dots,e_{k})$ of edges has \emph{color sequence} $(c_{1},\dots,c_{k})$, where each $c_{i}\in\set{\text{black},\text{white}}$, if each $e_{i}$ has color $c_{i}$.
-      In this problem, you will design an algorithm that, given two vertices~$s,t$ and a desired color sequence $(c_{1},\dots,c_{k})$, determines in $O(mk)$ time whether there exists a path of length $k$ from~$s$ to~$t$ with that color sequence.
-  Note that paths in this problem do not need to be \emph{simple}; they can visit vertices or edges more than once.
+\question \textbf{Fixed-color-sequence paths.}
 
-  The graph $G=(V,E)$ is represented via \emph{adjacency lists}, i.e., for each vertex $i \in V$ there is a list of all its neighbors: vertices~$j$ such that $(i,j) \in E$.
+Let $G=(V,E)$ be an undirected graph with $n$ vertices and $m$ edges, where
+$m\ge n$.  Each edge is colored black or white.  Given vertices $s,t$ and a
+desired color sequence $(c_1,\ldots,c_k)$, we must determine whether there is
+a length-$k$ path from $s$ to $t$ with exactly this sequence.
 
   \begin{parts}
     \part[10]
-    Derive a recurrence relation, including base case(s), for this problem.
-    Briefly justify its correctness.
-      
     \begin{solution}
-    \end{solution}
-        
-    \part[6] Give pseudocode implementing an $O(km)$-time dynamic programming solution to this problem, and justify its running time.
-    You do not need to give a correctness analysis since you did so for your recurrence. 
-    
-    \begin{solution}
-    \end{solution}
-  \end{parts}
+    Define the DP state $F(i,v)$ to be true exactly when there is a length-$i$
+    path from $s$ to $v$ whose edge colors are $(c_1,\ldots,c_i)$.  The base
+    cases are
+    \[
+      F(0,s)=\text{true},\qquad F(0,v)=\text{false}\quad(v\ne s).
+    \]
+    For $i\ge1$,
+    \[
+      F(i,v)=\bigvee_{\substack{u\in\operatorname{Adj}(v)\\
+                    \operatorname{color}(u,v)=c_i}}F(i-1,u).
+    \]
+    The desired answer is $F(k,t)$.
 
-  \question \textbf{Back to college} 
-  \nopagebreak
-   Michael drives down to Ann Arbor from his hometown for the start of each school year.
-   Interested in minimizing his commute time, he invents a modular fuel pack for his car for the commute through various towns in Michigan.
-   This fuel pack allows the vehicle to travel a certain distance before refueling.
-   Each town has a service station where a fuel pack can be reloaded: the current pack is simply swapped out for a fresh full one.
-   (Any remaining fuel in the removed pack will not be used by the car.)
-   The goal is to visit the towns in a specified order, while minimizing the number of fuel pack reloads.
-
-   We model this problem as follows.
-   The car can travel a distance up to~$R$ on a single fuel pack.
-   Starting from town 0, there are~$n$ other towns to visit in sequence.
-   For $i=1, \ldots, n$, the distance from the $(i-1)$st town to the $i$th town is $d_i \leq R$.
-   Given~$R$ and an array $D = [d_1, \ldots, d_n]$ as input, the goal is to find a \emph{smallest} set $S \subseteq \set{1,\ldots,n}$ of towns (specified by their indices) where refueling should occur, so that the car can reach all~$n$ towns without running out of fuel at any point.
-   The car starts out with a full fuel pack, and no refueling is needed at the final town.
-
-  \begin{parts}
-    \part[7] Give a greedy algorithm (including pseuodocode) that solves this problem.
-    Defer a correctness argument to the next part, but provide everything else involved in ``giving an algorithm'' here.
-    
-    \begin{solution}
-    \end{solution}
-    
-    \part[10] The setup for your correctness proof is as follows.
-    Let $\OPT$ be some arbitrary optimal solution.
-    Let $\ALG=i_1,i_2,i_3,\dots, i_k$ be the towns chosen by your algorithm, in their greedily chosen order.
-    If $\ALG = \OPT$, then $\ALG$ is optimal, as needed.
-    So suppose that $\ALG \neq \OPT$, and consider the \emph{first} town $i_{\text{diff}}$ in $\ALG$ that is not in $\OPT$.
-    (Such an $i_{\text{diff}}$ must exist because $\ALG$ must have at least as many towns as $\OPT$, since $\OPT$ is optimal.)
-    So, $\OPT$ contains all of $i_1,i_2,i_3,\dots, i_{\text{diff}-1}$, but not $i_{\text{diff}}$.
-
-    You will construct another optimal solution $\OPT'$ that contains all of $i_1,i_2,i_3,\ldots,i_{\text{diff}}$ by modifying $\OPT$, exchanging out some suitable town~$j$ for $i_{\text{diff}}$ instead.
-
-    Describe which town~$j$ to exchange for $i_\text{diff}$, and prove that $\OPT'$ is an optimal solution. In particular, you should prove that $\OPT'$ is a valid solution \emph{and} an optimal solution. 
-    
-    \begin{solution}
+    This recurrence has the needed optimal-substructure property: the prefix
+    before the last edge must itself be a valid solution to the smaller
+    length-$i-1$ subproblem.  To justify the recurrence, consider the last edge
+    of a length-$i$ path
+    ending at $v$.  It must come from some neighbor $u$ whose edge has color
+    $c_i$, and the preceding edges must form a valid length-$(i-1)$ path from
+    $s$ to $u$.  This proves that every valid path is represented by one true
+    term in the disjunction.  Conversely, any true term extends a valid
+    length-$(i-1)$ path by the qualifying edge $(u,v)$, producing a valid
+    length-$i$ path.  The base cases describe the unique length-zero path.
     \end{solution}
 
-    \part[4] Explain in your own words why the previous part (proving that $\OPT'$ is an optimal solution that contains $i_1, \ldots, i_\text{diff}$) ultimately proves that your algorithm is correct.
-
+    \part[6]
     \begin{solution}
-    \end{solution}
-    
-    \part[5] Now, suppose that the price of a fuel pack may differ from town to town.
-    For example, a fuel pack might cost \$8 in the first town, \$3 in the second town, etc. So, the input now also includes an array $C=[c_1, \ldots, c_n]$, where~$c_i$ is the cost of refueling in the $i$th town.
-    The goal now is to complete the tour while \emph{minimizing the total cost} of the fuel packs that are purchased along the way.
+    \begin{algorithm}[H]
+      \caption{FixedColorPath$(G,s,t,c_1,\ldots,c_k)$}
+      \begin{algorithmic}[1]
+        \ForAll{$v\in V$}
+          \State{$F[0,v]\gets\text{false}$}
+        \EndFor
+        \State{$F[0,s]\gets\text{true}$}
+        \For{$i\gets1$ \textbf{to} $k$}
+          \ForAll{$v\in V$}
+            \State{$F[i,v]\gets\text{false}$}
+            \ForAll{$u\in\operatorname{Adj}(v)$}
+              \If{$\operatorname{color}(u,v)=c_i$ \textbf{and} $F[i-1,u]$}
+                \State{$F[i,v]\gets\text{true}$}
+              \EndIf
+            \EndFor
+          \EndFor
+        \EndFor
+        \State{\Return{$F[k,t]$}}
+      \end{algorithmic}
+    \end{algorithm}
 
-    Michael claims that we should use the same greedy algorithm that you proposed above to solve this problem.
-    Determine whether this claim is true or not.
-    \begin{itemize}
-        \item If it is true, give a proof using a greedy exchange argument.
-        \item Otherwise, provide a small counterexample: give a specific input, the output of your greedy algorithm on that input, and a better solution for that input; also, \emph{very briefly} explain where your proof from the previous part fails for this problem. 
-    \end{itemize}
-    
-
-    \begin{solution}
+    This pseudocode evaluates the recurrence by bottom-up table filling.  For
+    a fixed $i$, the inner adjacency-list scans examine a total of
+    $2m$ entries, because the graph is undirected and each edge occurs in two
+    adjacency lists.  The work for one layer is therefore $O(m+n)=O(m)$,
+    since $m\ge n$.  There are $k$ layers, so the total running time is
+    $O(km)$.  The table uses $O(kn)$ space; keeping only the previous layer
+    would reduce the space to $O(n)$ without changing the time.
     \end{solution}
   \end{parts}
 
-  
-  \question \textbf{Dynamic programming for dynamic shortest paths.} \nopagebreak
-             
-  Graphs that arise in real applications are often not fixed, but can change over time; such graphs are called ``dynamic.''
-  (This is a totally different use of the word ``dynamic'' than in ``dynamic programming''.
-  Computer scientists sometimes name things in confusing ways!)
-  For example, roads and intersections can be added to or deleted from the road network, computers can be added to or removed from the Internet, and people can (un)follow each other on social networks.
-  For many problems of interest, there are algorithms for dynamic graphs that are faster than just re-computing answers ``from scratch'' whenever the graph changes.
-  In this problem you will give such algorithms for shortest-path problems.
+\question \textbf{Back to college}
+\nopagebreak
 
-  \vspace{1.0cm}
-  
-  Let $G=(V, E)$ be a weighted directed graph with $n=\abs{V}$ vertices, where the weight of each edge $(u,v)$ is denoted $w(u,v)$.
-  (There can be negative-weight edges, but there is no negative-weight cycle in $G$.)
-  Suppose that we have already computed the all-pairs distance table~$D$ of~$G$.
-  That is, for each vertex pair $u,v \in V$, entry $D(u,v)$ stores the distance (i.e., the length of a shortest path) from~$u$ to~$v$ in $G$.
-
-  Now, a new vertex $v_{new}$ is added to the graph, together with its incident edges.
-  Let $G_{new} = (V \cup \set{v_{new}}, E \cup E_{new})$ denote the updated graph, where $E_{new}$ consists of all the incoming and outgoing edges for $v_{new}$.
-  (There is no negative-weight cycle in $G_{new}$.)
-  We aim to compute the updated distance table $D_{new}$ of~$G_{new}$.
-
-  A straightforward approach is to compute $D_{new}$ from scratch using the Floyd-Warshall algorithm, in $\Theta(n^3)$ time.
-  But we want to do better by exploiting the fact that we already have~$D$.
-  In this problem, you will obtain a faster $O(n^2)$-time algorithm.
+  Let $x_0=0$ and $x_i=\sum_{r=1}^i d_r$ be the total distance from town $0$
+  to town $i$.
 
   \begin{parts}
-    
-    \part[10] Write expressions for $D_{new}(v_{new},u)$ and $D_{new}(u,v_{new})$ that hold for all $u\in V$, where the expressions are in terms of the already-known quantities $D(y,z)$ for $y,z\in V$, and $w(y,z)$ for $(y,z) \in E \cup E_{new}$. 
-    Evaluating your expressions should take $O(n)$ time for each vertex~$u$, for a total of $O(n^2)$ time.
-    Justify the correctness of your expressions and the evaluation time.
-    
-    \hint{Consider why the Bellman-Ford algorithm is correct.}
-    
+    \part[7]
     \begin{solution}
+    Starting immediately after a refueling at town $p$, the greedy choice is
+    the farthest town $q$ that can be reached on the current full pack:
+    \[
+      q=\max\{r\in\{p+1,\ldots,n\}:x_r-x_p\le R\}.
+    \]
+    If $q=n$, no further refueling is needed.  Otherwise refuel at $q$ and
+    repeat.
+
+    \begin{algorithm}[H]
+      \caption{GreedyRefuel$(R,D)$}
+      \begin{algorithmic}[1]
+        \State{$x[0]\gets0$}
+        \For{$i\gets1$ \textbf{to} $n$}
+          \State{$x[i]\gets x[i-1]+d_i$}
+        \EndFor
+        \State{$S\gets\emptyset$; $p\gets0$}
+        \While{$p<n$}
+          \State{$q\gets p$}
+          \While{$q<n$ \textbf{and} $x[q+1]-x[p]\le R$}
+            \State{$q\gets q+1$}
+          \EndWhile
+          \If{$q=n$}
+            \State{\textbf{break}}
+          \EndIf
+          \State{$S\gets S\cup\{q\}$}
+          \State{$p\gets q$}
+        \EndWhile
+        \State{\Return{$S$}}
+      \end{algorithmic}
+    \end{algorithm}
+
+    The prefix sums take $O(n)$ time.  The pointer $q$ only moves forward,
+    so over all iterations the two pointers together also take $O(n)$ time.
+    The algorithm uses $O(n)$ space for the prefix sums, or $O(1)$ additional
+    space if the distances are scanned with a suitable running total.
     \end{solution}
 
-    \part[8] Write an expression for $D_{new}(u,v)$ that holds for all $u,v \in V$, where the expression is in terms of the already-known quantities listed in the previous part, as well as the quantities you computed in the previous part.
-    Evaluating your expression for all $u,v \in V$ should take a total of $O(n^2)$ time.
-    Justify the correctness of your expression and the evaluation time.
-
-    Observe that by combining the two parts, we have computed the entire new distance table $D_{new}$ of $G_{new}$ in $O(n^2)$ time!
-    
-    \hint{Consider why the Floyd-Warshall algorithm is correct.}
-
+    \part[10]
     \begin{solution}
+    Use the notation from the prompt, and let $p=i_{\mathrm{diff}}-1$ be the
+    previous greedy refueling town.  Because $\OPT$ is valid, it must have a
+    next refueling town after $p$ unless it can reach town $n$ directly from
+    $p$.  The latter case is impossible: the greedy algorithm would then have
+    chosen $n$ instead of $i_{\mathrm{diff}}$.  Let $r$ be the first
+    refueling town of $\OPT$ after $p$.  Since $i_{\mathrm{diff}}$ is the
+    farthest reachable town from $p$, $r\le i_{\mathrm{diff}}$; and since
+    $i_{\mathrm{diff}}\notin\OPT$, we have $r<i_{\mathrm{diff}}$.
+    Let $j$ be the last town in $\OPT$ that occurs after $p$ and before
+    $i_{\mathrm{diff}}$.  Thus $j$ exists and $j<i_{\mathrm{diff}}$.
+
+    Let $q$ be the next refueling town of $\OPT$ after $j$, or let $q=n$ if
+    there is no such refueling town.  Because $\OPT$ is valid,
+    \[
+       x_q-x_j\le R.
+    \]
+    The greedy choice from $p$ satisfies
+    $x_{i_{\mathrm{diff}}}-x_p\le R$.  Therefore, replacing $j$ by
+    $i_{\mathrm{diff}}$ preserves feasibility on both affected segments:
+    \[
+       x_{i_{\mathrm{diff}}}-x_p\le R,
+       \qquad
+       x_q-x_{i_{\mathrm{diff}}}
+       \le x_q-x_j\le R,
+    \]
+    where the second inequality uses $j<i_{\mathrm{diff}}\le q$.
+    All other consecutive refueling segments are unchanged.  Thus
+    \[
+       \OPT'=(\OPT\setminus\{j\})\cup\{i_{\mathrm{diff}}\}
+    \]
+    is a valid solution.
+
+    The exchange removes exactly one town and adds exactly one town, so
+    $|\OPT'|=|\OPT|$.  Since $\OPT$ is optimal, no valid solution can use
+    fewer refueling towns, so $\OPT'$ is also optimal.  It contains the
+    greedy prefix through $i_{\mathrm{diff}}$, as required.
     \end{solution}
-  \end{parts}  
 
+    \part[4]
+    \begin{solution}
+    The exchange argument shows that each greedy choice is safe: whenever an
+    optimal solution first
+    disagrees with the greedy solution, it can be modified into another
+    optimal solution that agrees with one more greedy choice.  Repeating this
+    argument makes an optimal solution contain the entire greedy sequence.
+    Since the greedy sequence itself is valid, and an optimal solution cannot
+    have fewer refueling towns than a valid greedy solution containing its
+    whole sequence, the two sequences have the same size.  Hence the greedy
+    algorithm is optimal.
+    \end{solution}
 
+    \part[5]
+    \begin{solution}
+    The claim is false.  Consider
+    \[
+       R=10,\qquad D=[6,4,6],\qquad C=[3,8,100].
+    \]
+    The town positions are $x_0=0,x_1=6,x_2=10,x_3=16$.  The greedy
+    algorithm chooses town $2$, because it is the farthest town reachable from
+    town $0$ on the initial pack.  It therefore pays cost $c_2=8$.
 
-  \question \textbf{MST mashup.} \nopagebreak 
-  
+    A better solution refuels at town $1$: after traveling $6$ units, the new
+    pack covers the remaining distance $4+6=10$, so the car reaches town $3$
+    with total refueling cost $c_1=3$.  Thus the greedy solution is not
+    minimum-cost.
+
+    The exchange proof from the previous part fails because exchanging town
+    $j$ for the later town $i_{\mathrm{diff}}$ preserves the number of
+    refuelings, but it need not preserve or decrease their monetary cost.
+    \end{solution}
+  \end{parts}
+
+\question \textbf{Dynamic programming for dynamic shortest paths.} \nopagebreak
+
+Let $v_{\mathrm{new}}$ be the added vertex.
+
   \begin{parts}
-    
-    \part[5] Consider the following claim: a minimum spanning tree in a graph is \emph{unique} if the edge weights are \emph{distinct} (all different).
-
-    Professor $\Upsilon$ presents you with the following bogus ``proof'' of this claim: \emph{because edge weights are distinct, all choices in Kruskal's algorithm are completely determined---there are no ``ties'' between edge weights that the algorithm can choose how to break.
-      So, the algorithm has only one possible output.
-      Because Kruskal's algorithm is correct for the MST problem, its unique output must be the only minimum spanning tree in the graph.}
-      
-    Briefly explain what is wrong with this ``proof.''
-    In particular, indicate which sentence in the ``proof'' does not follow from the previous one, and provide a reason for it.
-
+    \part[10]
     \begin{solution}
+    For every $u\in V$,
+    \[
+      D_{\mathrm{new}}(v_{\mathrm{new}},u)
+       =\min_{(v_{\mathrm{new}},y)\in E_{\mathrm{new}}}
+          \bigl(w(v_{\mathrm{new}},y)+D(y,u)\bigr),
+      \tag{1}
+    \]
+    and
+    \[
+      D_{\mathrm{new}}(u,v_{\mathrm{new}})
+       =\min_{(y,v_{\mathrm{new}})\in E_{\mathrm{new}}}
+          \bigl(D(u,y)+w(y,v_{\mathrm{new}})\bigr).
+      \tag{2}
+    \]
+    Empty minima are interpreted as $+\infty$.
+
+    To prove (1), take a shortest path from $v_{\mathrm{new}}$ to $u$.
+    Because there is no negative-weight cycle, a shortest path can be chosen
+    simple, so after its first edge it never returns to $v_{\mathrm{new}}$.
+    If that first edge is $(v_{\mathrm{new}},y)$, the remaining path lies
+    entirely in the old graph and has length at least $D(y,u)$.  This proves
+    that every such path has length at least the right-hand side.  Conversely,
+    choosing any outgoing edge and concatenating it with an old shortest path
+    from $y$ to $u$ gives a valid path of the displayed length, proving
+    equality.  The proof of (2) is the same argument applied to the final
+    edge entering $v_{\mathrm{new}}$.
+
+    If $d^+$ is the number of outgoing new edges, evaluating (1) for all
+    $u$ takes $O(nd^+)$ time.  If $d^-$ is the number of incoming new edges,
+    evaluating (2) takes $O(nd^-)$ time.  Since $d^++d^-=O(n)$ in a simple
+    graph, the total is $O(n^2)$.
     \end{solution}
 
     \part[8]
-    Give a correct proof for the claim in the previous part.
-    
-    \hint{Consider two distinct spanning trees $T_1, T_2$ and prove via an exchange argument that one of them does not have minimum weight.}
-
     \begin{solution}
-    \end{solution}
+    For every $u,v\in V$,
+    \[
+      D_{\mathrm{new}}(u,v)=\min\left\{
+        D(u,v),\;
+        D_{\mathrm{new}}(u,v_{\mathrm{new}})
+        +D_{\mathrm{new}}(v_{\mathrm{new}},v)
+      \right\}.
+      \tag{3}
+    \]
 
+    This is the same shortest-path recurrence idea used in dynamic
+    programming for graphs.  A shortest path from $u$ to $v$ either avoids
+    $v_{\mathrm{new}}$, in
+    which case its length is at least $D(u,v)$, or uses it.  In the latter
+    case, split the path at its occurrence of $v_{\mathrm{new}}$.  The first
+    part has length at least
+    $D_{\mathrm{new}}(u,v_{\mathrm{new}})$ and the second part has length at
+    least $D_{\mathrm{new}}(v_{\mathrm{new}},v)$, so its length is at least
+    the second term of (3).  This proves that every path has length at least
+    the right-hand side.  Conversely, each term in (3) is realized by a
+    valid old-graph path or by concatenating two valid paths through the new
+    vertex, so the minimum is attainable.  If a concatenation repeats a
+    vertex, it is still a valid walk; since there is no negative cycle, any
+    repeated nonnegative cycle can be removed without increasing its length.
+
+    The two quantities in (3) have already been computed in the previous
+    part, so each pair $(u,v)$ takes $O(1)$ time.  There are $n^2$ pairs,
+    giving $O(n^2)$ additional time and therefore $O(n^2)$ total time.
+    \end{solution}
   \end{parts}
 
-
-  \question \textbf{Greedy knapsack filling.} \nopagebreak
-    
-  Recall the knapsack problem (sometimes called the ``0-1'' knapsack problem): you are given~$n$ items, where the $i$th item has weight~$w_{i}$ and value~$v_{i}$ (both positive integers), and a non-negative weight capacity~$C$ of the knapsack.
-  An optimal solution is a subset $S\subseteq \set{1, 2, \ldots, n}$ of the items having maximum total value \[ \sum_{i\in S} v_i \; \text, \] under the constraint that the total weight is at most the knapsack capacity, i.e., \[ \sum_{i\in S} w_i \leq C \; \text. 
-  \]
-
-  In this problem, we introduce the \emph{fractional} variant of the knapsack problem, where one may take any fraction $p_i \in [0,1]$ of any item~$i$.
-  Naturally, a $p_i$-fraction of item~$i$ weighs $p_i \cdot w_i$, and has value $p_i \cdot v_i$.
-  The goal is to maximize the total value of the selected fractional items.
+\question \textbf{MST mashup.} \nopagebreak
 
   \begin{parts}
-
-    \part[2] 
-    Briefly explain why the optimal value for the fractional knapsack problem is \emph{at least as large} as that of the original 0-1 knapsack problem (for the same weights, values, and knapsack capacity).
-
+    \part[5]
     \begin{solution}
-    \end{solution}
-    
-    \part[5] Consider the following two greedy algorithms for the fractional knapsack problem:
-    \begin{itemize}
-    \item \algo{ValueGreedy}: While there is still some unused knapsack capacity and at least one unconsidered item, choose an item having the \emph{largest value} (among those not considered yet), and add the largest possible fraction of that item (up to the entire item) that will fit within the remaining knapsack capacity.
-        
-    \item \algo{WeightGreedy}: While there is still some unused knapsack capacity and at least one unconsidered item, choose an item having the \emph{smallest weight} (among those not considered yet), and add the largest possible fraction of that item (up to the entire item) that will fit within the remaining knapsack capacity.
-    \end{itemize}
-
-    Suppose we run \emph{both} algorithms \algo{ValueGreedy} and \algo{WeightGreedy}, and output a best one of their two outputs.
-    Is this a correct algorithm for the fractional knapsack problem?
-    If so, prove it.
-    Otherwise, give an input for which this algorithm's output is not optimal, and show why it is not.
-
-    \begin{solution}
+    The problematic implication is the final one: \textquotedblleft Kruskal has one output; therefore that output is the only minimum spanning tree.\textquotedblright\ Correctness
+    of Kruskal says that its output is an MST, not that every MST must be the
+    output of a particular deterministic algorithm.  An algorithm can make a
+    single deterministic choice even when several different optimal solutions
+    exist.  Thus uniqueness of Kruskal's execution does not imply uniqueness
+    of the set of all MSTs.
     \end{solution}
 
-    \part[10] Consider the following greedy algorithm for the fractional knapsack problem: 
-    \begin{itemize}
-    \item \algo{RelativelyGreedy}: While there is still some unused knapsack capacity, choose an item having the largest \emph{relative value} $v_i/w_i$ (among those not considered yet), and add the largest possible fraction of that item (up to the full item) that will fit within the remaining knapsack capacity.
-    \end{itemize}
-
-    In this part, you will prove that the \algo{RelativelyGreedy} algorithm is a correct algorithm for the fractional knapsack problem.
-    This is notable because we used a more complicated dynamic programming algorithm to solve 0-1 Knapsack, but the fractional variant admits a much simpler greedy algorithm!
-
-    The setup for your correctness proof is as follows.
-    Without loss of generality, suppose that the items are in sorted order by relative value $r_{i}=v_{i}/w_{i}$, from largest to smallest (the algorithm considers them in this order).
-    Let $\ALG=p_1,p_2,\dots,p_n$ be the fractions of items $1,2,\dots, n$ chosen by the algorithm, respectively.
-    (So, $p_i=1$ if the algorithm chooses all of item~$i$, and $p_i=0$ if it doesn't choose any of item~$i$.)
-
-    Let $\OPT$ be an arbitrary optimal solution.
-    If $\ALG = \OPT$, then $\ALG$ is optimal, as needed.
-    So suppose that $\ALG \neq \OPT$, and consider the smallest index $j$ such that $\OPT$ does not have \emph{exactly} a $p_j$-fraction of item $j$.
-
-    You will construct another solution $\OPT'$ whose fractions of the first~$j$ items are exactly $p_1,p_2,\ldots,p_j$ by modifying $\OPT$, using an exchange argument.
-
-    Describe which fraction(s) of item(s) to exchange, and prove that $\OPT'$ is an optimal solution; this should include a proof that $\OPT'$ is a \emph{valid} solution.
-
+    \part[8]
     \begin{solution}
-    \end{solution}
+    Suppose for contradiction that two distinct spanning trees $T_1$ and
+    $T_2$ are both minimum spanning trees.  Choose an edge $e$ of minimum
+    weight in the symmetric difference $T_1\triangle T_2$, and without loss
+    of generality assume $e\in T_1\setminus T_2$.
 
+    Remove $e$ from $T_1$.  This creates two connected components, say $A$
+    and $B$.  Consider the unique $T_2$-path between the endpoints of $e$.
+    Its endpoints lie on opposite sides of $(A,B)$, so the path contains an
+    edge $f$ crossing this cut.  The edge $f$ cannot belong to $T_1-e$, since
+    that graph has no edge crossing the cut, and it is not $e$ because
+    $e\notin T_2$.  Hence $f\in T_2\setminus T_1$, so $f$ also belongs to
+    the symmetric difference.
+
+    All edge weights are distinct, and $e$ was chosen as the minimum-weight
+    edge in the symmetric difference.  Therefore $w(e)<w(f)$.  Now
+    Adding $e$ to $T_2$ creates the unique cycle formed by $e$ and the
+    $T_2$-path just considered; $f$ lies on this cycle.  Therefore
+    $T_2-f+e$ is a spanning tree.  Its weight is
+    \[
+       w(T_2)-w(f)+w(e)<w(T_2),
+    \]
+    contradicting the minimality of $T_2$.  Thus a graph with distinct edge
+    weights has at most one MST; since a spanning tree exists in the setting
+    of the claim, its MST is unique.
+    \end{solution}
   \end{parts}
-  
 
-  \bonusquestion \textbf{Optional extra credit: Greedily independent.} 
-
-  
-  \nopagebreak
-
-  An \emph{independent set} of an undirected graph $G=(V,E)$ is a subset of vertices $S \subseteq V$ such that no two vertices in $S$ are adjacent, i.e., $(u,v) \notin E$ for every distinct $u,v \in S$.
-  We are interested in a \emph{maximum} independent set, i.e., the independent set with the \emph{largest} number of vertices.
-  (There may be more than one maximum independent set.)
-    
-  Consider the following greedy algorithm for finding an independent set in a graph.
-
-  \begin{minipage}{\linewidth}
-    \begin{algorithm}[H]
-      \begin{algorithmic}[1]
-        \Function{GreedyIS}{$G=(V,E)$}
-        \State{$S \gets \emptyset$}
-        \While{$G$ has at least one vertex}
-            \State{Select any vertex~$v$ in $G$ that has \emph{smallest} degree (i.e., the fewest neighbors)}
-            \State{Add $v$ to $S$}
-            \State{Remove $v$ and all its neighbors, including all their incident edges, from $G$}
-        \EndWhile
-        \State{\Return{$S$}}
-        \EndFunction
-      \end{algorithmic}
-    \end{algorithm}
-  \end{minipage}
+\question \textbf{Greedy knapsack filling.} \nopagebreak
 
   \begin{parts}
+    \part[2]
+    \begin{solution}
+    Every feasible 0--1 solution is also a feasible fractional solution by
+    choosing each fraction $p_i$ to be either $0$ or $1$.  The fractional
+    problem maximizes over a superset of the 0--1 feasible solutions, so its
+    optimal value is at least as large.
+    \end{solution}
 
+    \part[5]
+    \begin{solution}
+    The proposed algorithm is not correct.  Consider capacity $C=10$ and
+    three items:
+    \[
+      (w_1,v_1)=(100,100),\qquad
+      (w_2,v_2)=(1,1),\qquad
+      (w_3,v_3)=(10,90).
+    \]
+    \algo{ValueGreedy} first chooses item $1$, since it has value $100$.
+    It takes a $1/10$ fraction and obtains value $10$.
+
+    \algo{WeightGreedy} first takes all of item $2$, using one unit of
+    capacity.  It then takes a $9/10$ fraction of item $3$, obtaining total
+    value $1+81=82$.  Thus the better of the two greedy outputs has value
+    $82$.
+
+    However, taking all of item $3$ uses exactly the capacity and gives value
+    $90$, which is optimal: item $3$ alone has value $90$, and no feasible
+    solution can use more than the maximum value-per-weight item $3$ on all
+    ten units of capacity.  Therefore the proposed algorithm can return a
+    suboptimal answer.
+    \end{solution}
+
+    \part[10]
+    \begin{solution}
+    Let $r_i=v_i/w_i$ and assume $r_1\ge r_2\ge\cdots\ge r_n$.  Let
+    $p_i$ be the fractions selected by \algo{RelativelyGreedy}, and let
+    $q_i$ be the fractions of an arbitrary optimal solution $\OPT$.
+    Choose the smallest index $j$ for which $q_j\ne p_j$.  The fractions for
+    indices below $j$ already agree, so let
+    \[
+       C'=C-\sum_{i<j}p_iw_i
+    \]
+    be the capacity remaining before item $j$.
+
+    First suppose $p_j<1$.  Then the greedy algorithm fills the remaining
+    capacity with item $j$, so $p_jw_j=C'$ (the case $p_j=0$ cannot be a
+    first mismatch with a feasible solution unless there is no remaining
+    capacity).  Feasibility of $\OPT$ implies
+    \[
+       q_jw_j+\sum_{i>j}q_iw_i\le C'=p_jw_j,
+    \]
+    and hence $q_j\le p_j$.  Let $\delta=p_j-q_j>0$.  There is at least
+    $\delta w_j$ of capacity available either as unused capacity or as weight
+    currently assigned to later items.  Add a $\delta$-fraction of item $j$,
+    and remove a total weight $\delta w_j$ from later selected items, using
+    unused capacity first and then reducing later fractions as needed.  This
+    yields a feasible solution $\OPT'$ with the required fraction of item $j$.
+
+    Now suppose $p_j=1$.  Then $C'\ge w_j$.  Since $q_j\ne1$ and
+    $0\le q_j\le1$, let $\delta=1-q_j>0$.  The quantity of unused capacity
+    plus the weight assigned to later items is
+    \[
+       C'-q_jw_j\ge w_j-q_jw_j=\delta w_j,
+    \]
+    so the same exchange is possible: add a $\delta$-fraction of item $j$
+    and remove total weight $\delta w_j$ from unused capacity and later
+    items.
+
+    In either case, every removed fraction belongs to an item $i>j$, whose
+    relative value satisfies $r_i\le r_j$.  The value added is
+    $\delta w_jr_j$.  The value removed from later items is at most
+    $\delta w_jr_j$, and unused capacity removes no value.  Consequently
+    \[
+       \val(\OPT')\ge\val(\OPT).
+    \]
+    Since $\OPT$ was optimal, $\OPT'$ is also optimal.  It agrees with the
+    greedy fractions through index $j$.  Repeating this exchange for the next
+    disagreement eventually transforms an optimal solution into the greedy
+    solution.  Therefore \algo{RelativelyGreedy} is correct.
+    \end{solution}
+  \end{parts}
+
+\bonusquestion \textbf{Optional extra credit: Greedily independent.}
+\nopagebreak
+
+  \begin{parts}
     \bonuspart[1]
-    
-    Give an example of a graph for which the algorithm \algo{GreedyIS} \textbf{does not} return the maximum independent set.
-    You can assign numbers to the vertices of your graph, and assume that in the case where there are multiple vertices with the smallest degree, \algo{GreedyIS} will choose the vertex having the smallest number. 
     \begin{solution}
+    Use vertices $\{1,2,3,4,5,6\}$ and edges
+    \[
+      \{(1,2),(1,3),(1,4),
+        (2,5),(2,6),(3,5),(3,6),(4,5),(4,6),(5,6)\}.
+    \]
+    Vertex $1$ has degree $3$, vertices $2,3,4$ have degree $3$, and
+    vertices $5,6$ have degree $5$.  Therefore the tie-breaking rule selects
+    vertex $1$ first.  It removes vertices $2,3,4$, after which the algorithm
+    selects one of $5,6$, returning an independent set of size $2$.  But
+    $\{2,3,4\}$ is an independent set of size $3$, so the output is not
+    maximum.
     \end{solution}
 
-    
-    \bonuspart[2] In this part, you will prove that \algo{GreedyIS} returns a maximum independent set when the input graph is a \emph{tree}.
-
-    The setup for the proof is as follows.
-    Let $\ALG=v_1,v_2,v_3,\dots,v_k$ be the vertices chosen by your algorithm, in their greedily chosen order, and let $\OPT$ be some arbitrary optimal solution.
-    If $\ALG = \OPT$, then $\ALG$ is optimal, as needed.
-    So suppose that $\ALG \neq \OPT$, and consider the \emph{first} vertex $v_{\text{diff}}$ in $\ALG$ that is not in $\OPT$.
-    (Such a $v_{\text{diff}}$ must exist because $\ALG$ cannot be a proper subset of $\OPT$; do you see why?)
-    So, $\OPT$ contains all of $v_1,v_2,v_3,\dots,v_{\text{diff}-1}$, but not $v_{\text{diff}}$.
-    
-    You will construct another optimal solution (a maximum independent set) $\OPT'$ that has all of $v_1,v_2,v_3,\ldots,v_{\text{diff}}$ by modifying $\OPT$, exchanging out some suitable vertex~$u$ for $v_{\text{diff}}$ instead.
-
-    Describe which vertex~$u$ to exchange for $v_\text{diff}$, and prove that $\OPT'$ is both valid \textit{and} optimal.
-
+    \bonuspart[2]
     \begin{solution}
-    \end{solution}
+    Consider the graph remaining immediately before the algorithm selects
+    $v_{\mathrm{diff}}$.  It is a forest, because deleting vertices and edges
+    from a tree leaves a forest.  Every nonempty forest has a vertex of
+    degree at most $1$, so the minimum-degree choice satisfies
+    $\deg(v_{\mathrm{diff}})\le1$ in the remaining forest.
 
+    All previously chosen greedy vertices belong to $\OPT$ by the setup, and
+    the remaining vertex $v_{\mathrm{diff}}$ is not adjacent to any of them;
+    otherwise it would already have been deleted.  If
+    $\deg(v_{\mathrm{diff}})=0$, then $v_{\mathrm{diff}}$ has no neighbor in
+    $\OPT$, so we could add it to $\OPT$, contradicting maximality of
+    $\OPT$.  Thus it has exactly one remaining neighbor, call it $u$, and
+    $u\in\OPT$.
+
+    Define
+    \[
+       \OPT'=(\OPT\setminus\{u\})\cup\{v_{\mathrm{diff}}\}.
+    \]
+    The only possible neighbor of $v_{\mathrm{diff}}$ in the remaining
+    forest is $u$.  Any vertex deleted earlier is either a previously chosen
+    greedy vertex (which is in $\OPT$ and is not adjacent to
+    $v_{\mathrm{diff}}$) or a neighbor of one of those vertices (and hence
+    cannot belong to the independent set $\OPT$).  Therefore adding
+    $v_{\mathrm{diff}}$ after removing $u$ creates no adjacency inside
+    $\OPT'$.  The set is independent and has the same cardinality as $\OPT$,
+    so it is also a maximum independent set.  It contains the greedy prefix
+    through $v_{\mathrm{diff}}$.
+
+    Repeating the exchange for each first disagreement produces a maximum
+    independent set containing the entire greedy output.  Since the greedy
+    output itself is independent, it must have the same size as a maximum
+    independent set and is therefore maximum.
+    \end{solution}
   \end{parts}
-
-
-
 
 \end{questions}
 \end{document}

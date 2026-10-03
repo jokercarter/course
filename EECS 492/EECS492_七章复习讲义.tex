@@ -1,0 +1,382 @@
+\documentclass[UTF8,11pt,a4paper]{ctexart}
+\usepackage[a4paper,margin=2.2cm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb,mathtools,bm,booktabs,array,enumitem,xcolor,hyperref,fancyhdr,tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,urlcolor=blue!60!black}
+\setlist{nosep,leftmargin=2em}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0.35em}
+\pagestyle{fancy}\fancyhf{}\lhead{EECS 492 七章复习讲义}\rhead{\leftmark}\cfoot{\thepage}
+\newcommand{\R}{\mathbb{R}}\newcommand{\E}{\mathbb{E}}\newcommand{\argmin}{\mathop{\mathrm{argmin}}}\newcommand{\argmax}{\mathop{\mathrm{argmax}}}
+\newcommand{\loss}{\mathcal{L}}\newcommand{\softmax}{\operatorname{softmax}}\newcommand{\sigmoid}{\operatorname{sigmoid}}
+\title{EECS 492\ 实用人工智能复习讲义\\\large Lecture 1--7：从理性智能体到深度学习与 Transformer}
+\author{根据课程讲义整理}
+\date{\today}
+\begin{document}
+\maketitle
+\begin{abstract}
+本讲义按 Lecture 1--7 汇总课程中出现的核心概念、定义、算法、假设与公式。重点放在“输入--模型--损失--优化--泛化”的统一视角，并在每章末给出复习抓手。公式中的向量默认是列向量，除非特别说明。
+\end{abstract}
+\tableofcontents
+\newpage
+
+\section{Lecture 1：人工智能与理性智能体}
+\subsection{什么是人工智能}
+人工智能（AI）可以从四种经典观点理解：\begin{enumerate}
+\item \textbf{像人一样思考}：研究人的认知过程，再让机器模拟；依赖内省、心理学实验、脑成像和认知科学。
+\item \textbf{像人一样行动}：以图灵测试为代表，要求机器在自然语言、知识表示、自动推理和学习方面表现得像人；完全图灵测试还包括视觉、语音和机器人操作。
+\item \textbf{理性地思考}：使用逻辑和形式规则推导正确结论，例如“苏格拉底是人；所有人都会死；所以苏格拉底会死”。局限包括知识不完备、计算复杂度高和现实中的不确定性。
+\item \textbf{理性地行动}：把 AI 看作在不确定性下选择行动的智能体，目标是在给定信息、时间与资源限制下最大化期望表现。
+\end{enumerate}
+
+课程的主线是设计理性智能体，涉及搜索、问题求解、不确定性、学习、逻辑、决策树、回归、神经网络和 Transformer。课程还强调：目标函数不一定能完整表达人类价值，因此需要关注价值对齐、谨慎行动、征求许可以及保留人的控制权。
+
+\subsection{理性智能体的基本思想}
+智能体（agent）是能够通过传感器感知环境、通过执行器作用于环境，并自主追求目标或策略的实体。智能体在时刻 $t$ 接收到感知序列
+\[
+ p_{1:t}=(p_1,p_2,\ldots,p_t),
+\]
+并由智能体函数选择行动
+\[
+ a_t=\pi(p_{1:t}).
+\]
+理性并不意味着永远正确，而是指：对已有的感知序列、先验知识和可用行动，选择使期望性能度量最大的行动：
+\[
+ a_t^*=\argmax_{a\in A}\E[U\mid p_{1:t},a].
+\]
+性能度量应描述希望世界达到的状态，例如自动驾驶应安全、合法、舒适、快速并减少对他人的负面影响，而不是简单规定“必须执行某一个动作”。
+
+\subsection{本章要点}
+\begin{itemize}
+\item AI 的四种观点要区分“思考/行动”和“像人/理性”。
+\item 理性智能体以期望性能为准，而不是以设计者预设的动作列表为准。
+\item 现实 AI 的关键困难往往来自不确定性、目标不完整以及人类价值难以形式化。
+\end{itemize}
+
+\section{Lecture 2：智能体、数学复习与概率}
+\subsection{PEAS 与任务环境}
+用 PEAS 描述任务环境：\textbf{P}erformance measure（性能度量）、\textbf{E}nvironment（环境）、\textbf{A}ctuators（执行器）、\textbf{S}ensors（传感器）。例如自动驾驶穿梭车：性能包括安全、快速、舒适、守法和盈利；环境包括道路、交通、行人、乘客和天气；执行器包括方向盘、油门、刹车、转向灯和语音；传感器包括摄像头、雷达、GPS、速度计和加速度计。
+
+任务环境的七个维度：\begin{enumerate}
+\item \textbf{完全可观测/部分可观测}：能否在每个时刻获得环境状态的完整信息；噪声传感器和缺失信息会导致部分可观测。
+\item \textbf{确定性/非确定性}：当前状态和行动是否完全决定下一状态。
+\item \textbf{片段式/序贯式}：当前行动是否影响未来决策。
+\item \textbf{静态/动态}：智能体思考时世界是否仍在变化。
+\item \textbf{离散/连续}：状态、感知或行动的数量是否有限或可数。
+\item \textbf{已知/未知}：行动结果和环境规律是否已知；未知时智能体需要学习环境模型。
+\item \textbf{单智能体/多智能体}：是否存在其他会影响结果的智能体。
+\end{enumerate}
+
+\subsection{智能体类型}
+\begin{description}
+\item[简单反射智能体] 只根据当前感知做条件--行动映射，形式类似“若当前位置脏则清扫”。简单但无法处理隐藏状态和长期后果。
+\item[基于模型的反射智能体] 维护内部状态/信念，并使用关于世界如何变化的模型推断当前状态。
+\item[基于目标的智能体] 除模型外还知道期望状态，选择能到达目标的行动。
+\item[基于效用的智能体] 比较不同路径和目标状态的相对好坏，用效用函数处理多目标与权衡。
+\item[学习智能体] 从经验中改进环境模型、策略或效用；可适应设计者无法预见的情况。
+\end{description}
+
+\subsection{向量与矩阵}
+向量是有序数列，默认写成列向量：$\bm{x}=(x_1,\ldots,x_n)^T$。基本操作为
+\[
+\bm{x}+\bm{y}=(x_1+y_1,\ldots,x_n+y_n)^T,\qquad c\bm{x}=(cx_1,\ldots,cx_n)^T.
+\]
+范数（长度）为 $\|\bm{x}\|_2=\sqrt{\sum_i x_i^2}$；点积为
+\[
+\bm{x}\cdot\bm{y}=\sum_i x_i y_i=\|\bm{x}\|\|\bm{y}\|\cos\theta.
+\]
+矩阵 $A\in\R^{m\times n}$ 是 $m$ 行 $n$ 列数组。加法要求形状相同；乘法要求内维匹配：若 $A\in\R^{m\times n}$、$B\in\R^{n\times p}$，则
+\[
+(AB)_{ij}=\sum_{k=1}^{n}A_{ik}B_{kj},\qquad AB\in\R^{m\times p}.
+\]
+矩阵乘法通常不交换，但满足结合律。单位矩阵 $I$ 满足 $AI=IA=A$；转置满足 $(A^T)_{ij}=A_{ji}$；可逆矩阵满足 $A^{-1}A=I$，并非所有方阵可逆。
+
+\subsection{多元微积分与链式法则}
+标量函数 $f:\R^n\to\R$ 的梯度为
+\[
+\nabla f(\bm{x})=\left(\frac{\partial f}{\partial x_1},\ldots,\frac{\partial f}{\partial x_n}\right)^T.
+\]
+梯度指向局部增长最快的方向，负梯度是局部下降最快的方向。标量链式法则为
+\[
+z=g(x),\ y=f(z)\quad\Longrightarrow\quad\frac{dy}{dx}=\frac{dy}{dz}\frac{dz}{dx}.
+\]
+若 $z_j=g_j(\bm{x})$、$y=f(\bm{z})$，则
+\[
+\frac{\partial y}{\partial x_k}=\sum_j\frac{\partial y}{\partial z_j}\frac{\partial z_j}{\partial x_k}.
+\]
+这正是反向传播的数学基础：从损失对输出的导数开始，沿计算图反向乘上局部导数。
+
+\subsection{概率基础}
+样本空间 $\Omega$ 是所有可能结果的集合；结果记为 $\omega$；事件是 $\Omega$ 的子集；随机变量 $X$ 为结果赋值。离散分布用概率质量函数，连续分布用概率密度函数。概率满足 Kolmogorov 公理：
+\[
+P(e)\ge0,\qquad P(\Omega)=1,\qquad P(A\cup B)=P(A)+P(B)\ (A\cap B=\varnothing).
+\]
+常用关系为
+\[
+P(\neg A)=1-P(A),\quad P(A\cup B)=P(A)+P(B)-P(A\cap B),
+\]
+\[
+P(A\mid B)=\frac{P(A\cap B)}{P(B)},\qquad P(A\cap B)=P(A\mid B)P(B).
+\]
+贝叶斯公式：
+\[
+P(A\mid B)=\frac{P(B\mid A)P(A)}{P(B)},\qquad P(A)=\sum_iP(A\mid B_i)P(B_i).
+\]
+期望和方差：
+\[
+\E[X]=\sum_x xP(x),\qquad \operatorname{Var}(X)=\E[(X-\E[X])^2].
+\]
+独立意味着 $P(A\cap B)=P(A)P(B)$；独立不等于互斥。
+
+\section{Lecture 3：机器学习入门}
+\subsection{学习类型}
+学习的判据是：观察世界后，在未来任务上性能提高。\textbf{强化学习}从奖励/惩罚序列学习，通常建立在 MDP/POMDP 上；\textbf{无监督学习}没有显式标签，目标是发现输入结构；\textbf{监督学习}观察输入--输出样本，学习映射 $h:\mathcal X\to\mathcal Y$；\textbf{自监督学习}从数据自身构造监督信号。
+
+无监督学习的经典任务是 $k$-means 聚类。给定 $n$ 个点和 $k$ 个簇，Lloyd 算法反复执行：随机初始化质心；将每点分给最近质心；用簇内平均值更新质心；直到分配不再变化。其目标函数为
+\[
+J(\{\mu_j\})=\sum_{i=1}^{n}\left\|\bm{x}^{(i)}-\bm{\mu}_{c(i)}\right\|_2^2,
+\qquad c(i)=\argmin_j\|\bm{x}^{(i)}-\bm\mu_j\|_2.
+\]
+算法通常收敛到局部最优，结果受初始化和 $k$ 影响。
+
+监督学习给定训练样本 $D=\{(\bm{x}^{(i)},y^{(i)})\}_{i=1}^n$，未知目标函数 $f$，假设空间 $H$ 和学习算法 $A$ 产生假设 $h=A(D)\in H$，用 $h(\bm{x})$ 近似 $f(\bm{x})$。分类输出离散类别，回归输出连续数值。
+
+\subsection{训练、验证、测试与泛化}
+训练集用于学习参数；验证集用于选择模型和超参数；测试集只用于最终泛化评估。不能反复根据测试集调参，否则测试集不再是无偏的最终评估。$k$ 折交叉验证将训练/验证数据分成 $k$ 份，每次用一份验证、其余训练，报告 $k$ 次结果的平均值，最后用全部训练数据重训并在测试集上评估。
+
+偏差--方差权衡：偏差高表示模型表达能力不足、训练误差也可能较大；方差高表示模型对训练样本波动敏感。模型过简单会欠拟合，模型过复杂会过拟合。增加复杂度通常降低偏差但增加方差；正则化、更多数据、交叉验证和集成方法可改善泛化。
+
+\section{Lecture 4：决策树与集成方法}
+\subsection{决策树模型}
+决策树是分类监督学习模型。内部节点测试某个属性，边表示属性取值，叶节点给出类别。预测时从根开始沿测试结果走到叶。目标是用尽可能少的测试正确分类训练样本。
+
+经典决策树学习是贪心的分治递归：若样本为空，返回父节点样本中的多数类；若样本全同类，返回该类；若没有属性但仍有冲突，返回多数类；否则选择重要性最高的属性作为根，对每个取值递归学习子树。
+
+\subsection{熵与信息增益}
+随机变量 $V$ 的熵为
+\[
+H(V)=-\sum_kP(v_k)\log_2P(v_k).
+\]
+确定结果的熵为 0，公平二元变量熵为 1 bit，公平四面骰熵为 2 bit。布尔熵写作
+\[
+B(q)=-q\log_2q-(1-q)\log_2(1-q).
+\]
+属性 $A$ 将样本分成 $E_1,\ldots,E_d$，则条件熵/剩余信息为
+\[
+\operatorname{Remainder}(A)=\sum_{k=1}^{d}\frac{|E_k|}{|E|}H(Y\mid E_k),
+\]
+信息增益为
+\[
+\operatorname{Gain}(A)=H(Y)-\operatorname{Remainder}(A).
+\]
+选择信息增益最大的属性。直觉是：好的划分能让每个子集更“纯”。
+
+\subsection{树的风险与剪枝}
+决策树容易过拟合，尤其在噪声多、属性多或树很深时。剪枝删除只拟合噪声的测试；停止分裂、限制深度、设置叶节点最小样本数也能降低方差。需要注意，训练数据不会直接存进树，树只保留测试规则；未见过的属性组合和错误/噪声会导致错误。
+
+\subsection{集成方法}
+集成将多个基础模型的输出组合起来，可降低偏差、降低方差或两者兼顾。分类常用多数投票，回归常用平均：
+\[
+h(\bm{x})=\frac1K\sum_{i=1}^Kh_i(\bm{x}).
+\]
+\begin{description}
+\item[Bagging] 从原训练集有放回采样产生 $K$ 个数据集，分别训练模型并投票/平均，主要降低方差。
+\item[随机森林] 在 bagging 决策树基础上，每次分裂只随机考虑一部分属性，增加树之间的多样性，得到许多复杂但不完全相同的树。
+\item[Boosting] 维护样本权重：先训练 $h_1$，提高被错分样本权重、降低正确样本权重，再训练后续模型；最终按模型表现加权组合。形式可写为 $h(\bm{x})=\sum_i z_i h_i(\bm{x})$。
+\end{description}
+
+\section{Lecture 5：线性回归}
+\subsection{模型与假设}
+回归预测连续 $y$，单变量线性模型为
+\[
+y=w_0+w_1x+\varepsilon.
+\]
+这里 $w_0$ 是截距，$w_1$ 是斜率，$\varepsilon$ 是随机误差。经典假设：误差均值为 0；误差方差恒定为 $\sigma^2$；误差服从高斯分布；不同观测的误差相互独立。
+
+对 $n$ 个样本，平方误差损失（SSE）为
+\[
+\loss(\bm w)=\sum_{i=1}^{n}\left(y_i-(w_0+w_1x_i)\right)^2.
+\]
+平方损失是凸函数，因此在线性回归中没有坏的局部极小点。单变量解析解为
+\[
+w_1=\frac{n\sum_i x_i y_i-(\sum_i x_i)(\sum_i y_i)}{n\sum_i x_i^2-(\sum_i x_i)^2},\qquad
+w_0=\frac{\sum_i y_i-w_1\sum_i x_i}{n}.
+\]
+
+\subsection{多元回归与正规方程}
+有 $k$ 个特征时，将截距吸收进 $x_{i0}=1$：
+\[
+h_{\bm w}(\bm x_i)=\sum_{j=0}^{k}w_jx_{ij}=\bm w^T\bm x_i.
+\]
+将样本排成设计矩阵 $X$，目标向量为 $\bm y$，则
+\[
+\loss(\bm w)=\|\bm y-X\bm w\|_2^2,qquad
+\bm w^*=(X^TX)^{-1}X^T\bm y,
+\]
+前提是 $X^TX$ 可逆。矩阵很大、病态或需要在线学习时，梯度下降更实用。
+
+\subsection{梯度下降}
+一般更新式为
+\[
+w_j\leftarrow w_j-\alpha\frac{\partial\loss}{\partial w_j},
+\]
+其中 $\alpha>0$ 是学习率。对平方损失，可按误差方向写成
+\[
+w_0\leftarrow w_0+\alpha\frac1n\sum_i(y_i-h_{\bm w}(\bm x_i)),
+\]
+\[
+w_j\leftarrow w_j+\alpha\frac1n\sum_i(y_i-h_{\bm w}(\bm x_i))x_{ij}.
+\]
+批量梯度下降每次使用全部样本，步子稳定且在足够小学习率下可收敛；随机梯度下降每次使用一个样本或小批量，计算快、噪声大、未必严格收敛，但适合大数据。
+
+\subsection{回归评估}
+决定系数
+\[
+R^2=1-\frac{SS_{\mathrm{RES}}}{SS_{\mathrm{TOT}}},\qquad
+SS_{\mathrm{RES}}=\sum_i(y_i-\hat y_i)^2,\quad
+SS_{\mathrm{TOT}}=\sum_i(y_i-\bar y)^2.
+\]
+$R^2=1$ 表示完美拟合，$R^2=0$ 表示模型不比用均值预测更好；实际使用时要结合测试集、残差图和任务目标。
+
+\section{Lecture 6：神经网络与深度学习}
+\subsection{单个神经元}
+神经元先做线性组合，再施加非线性激活：
+\[
+z=\bm w^T\bm x+b=\sum_iw_ix_i+b,\qquad a=y=g(z).
+\]
+若没有非线性，多层线性层仍可合并为一层线性变换，不能表示复杂边界；激活函数是深度网络表达能力的关键。
+
+常见激活：\[
+\text{step: }g(s)=\begin{cases}1&s>0\\0&\text{otherwise}\end{cases};\quad
+\sigmoid(s)=\frac1{1+e^{-s}},\quad \sigmoid'(s)=\sigmoid(s)(1-\sigmoid(s));
+\]
+\[
+\tanh(s)=\frac{e^s-e^{-s}}{e^s+e^{-s}},\qquad
+\operatorname{ReLU}(s)=\max(0,s),\quad
+\operatorname{ReLU}'(s)=\begin{cases}1&s>0\\0&\text{otherwise.}\end{cases}
+\]
+阶跃函数不可导；sigmoid 输出在 $(0,1)$；tanh 输出在 $(-1,1)$；ReLU 产生稀疏激活且计算简单，但可能有“死亡 ReLU”问题。
+
+\subsection{前馈神经网络}
+多层感知机（MLP/全连接网络）没有环，后一层接收前一层输出。对第 $l$ 层：
+\[
+\bm z^{[l]}=W^{[l]}\bm a^{[l-1]}+\bm b^{[l]},\qquad
+\bm a^{[l]}=g^{[l]}(\bm z^{[l]}).
+\]
+其中 $\bm a^{[0]}=\bm x$，最后一层输出预测。也可添加常数节点 $a_0=1$，把偏置吸收到权重中。
+
+\subsection{二元交叉熵与反向传播}
+二分类通常用 sigmoid 输出 $\hat y\in(0,1)$，二元交叉熵为
+\[
+\loss(W)=-\frac1n\sum_{i=1}^{n}\left[y^{(i)}\log \hat y^{(i)}+(1-y^{(i)})\log(1-\hat y^{(i)})\right].
+\]
+真实标签概率分布为 $A$、预测分布为 $B$ 时，交叉熵
+\[
+H(A,B)=-\sum_kP_A(k)\log P_B(k).
+\]
+预测越确信但越错误，损失增长越快。训练就是对所有权重反复执行梯度下降；反向传播使用链式法则高效计算每层梯度。
+
+\subsection{卷积神经网络（CNN）概念}
+CNN 适合图像等具有局部结构的数据。卷积核在输入上滑动，通过局部连接和权重共享提取边缘、纹理、形状等特征；多层卷积逐渐形成更抽象表示。典型组件包括卷积、非线性激活、池化/下采样和全连接层。局部感受野减少参数，权重共享带来平移相关的归纳偏置；代价是对全局关系的建模需要更深层或额外机制。
+
+\section{Lecture 7：自注意力与 Transformer}
+\subsection{动机与输入表示}
+Transformer 将一个输入向量序列映射为同长度输出序列，由 Transformer block 堆叠而成，核心组件是自注意力和前馈网络。相比按时间顺序逐个计算隐藏状态的循环方法，自注意力在训练时能并行处理序列位置，并直接连接任意距离的上下文。
+
+词嵌入把离散词映射为连续向量，位置嵌入表示词在序列中的位置。输入通常为
+\[
+\bm x_i=\text{word-embedding}_i+\text{positional-embedding}_i.
+\]
+嵌入的目标是让语义或其他有用结构在连续向量空间中体现出来。
+
+\subsection{从直觉到公式：注意力}
+注意力回答“当前元素应关注输入的哪些部分”。最简单的自注意力以点积作为相似度：
+\[
+s_{ij}=\bm x_i\cdot\bm x_j,\qquad
+\alpha_{ij}=\frac{e^{s_{ij}}}{\sum_k e^{s_{ik}}},\qquad
+\bm y_i=\sum_j\alpha_{ij}\bm x_j.
+\]
+因此注意力包含三步：比较相关性；用 softmax 归一化为概率权重；按权重求和。Softmax 定义为
+\[
+\softmax(\bm z)_i=\frac{e^{z_i}}{\sum_{j=1}^{K}e^{z_j}},
+\]
+输出非负且总和为 1。数值实现常减去 $\max_i z_i$：\[
+\softmax(\bm z)_i=\frac{e^{z_i-m}}{\sum_j e^{z_j-m}},\quad m=\max_jz_j.
+\]
+
+\subsection{Query、Key、Value 与缩放点积}
+每个输入向量通过三个不同的线性投影承担三种角色：
+\[
+\bm q_i=W^Q\bm x_i,\qquad \bm k_i=W^K\bm x_i,\qquad \bm v_i=W^V\bm x_i.
+\]
+查询与键比较，值参与输出。为避免点积维数增大导致 logits 过大、softmax 饱和和梯度不稳定，使用缩放点积：
+\[
+s_{ij}=\frac{\bm q_i^T\bm k_j}{\sqrt{d_k}},\qquad
+\alpha_{ij}=\frac{\exp(s_{ij})}{\sum_{r}\exp(s_{ir})},\qquad
+\bm y_i=\sum_j\alpha_{ij}\bm v_j.
+\]
+矩阵形式（忽略掩码）为
+\[
+\operatorname{Attention}(Q,K,V)=\softmax\left(\frac{QK^T}{\sqrt{d_k}}\right)V.
+\]
+因果语言模型会遮住未来位置，使位置 $i$ 只能看见过去和当前位置；编码器通常可以看双向上下文。
+
+\subsection{多头注意力与 Transformer block}
+不同关系可能同时存在，例如主语--动词、代词--指代词、局部句法和长距离语义。多头注意力用多组独立参数并行计算：
+\[
+\operatorname{head}_r=\operatorname{Attention}(QW_r^Q,KW_r^K,VW_r^V),
+\]
+再拼接并线性投影：
+\[
+\operatorname{MHA}(Q,K,V)=\operatorname{Concat}(\operatorname{head}_1,\ldots,\operatorname{head}_h)W^O.
+\]
+每个 head 可学习不同关系。标准 block 还包含位置逐点前馈网络（通常是两层 MLP）、残差连接和归一化；它们分别提供非线性变换、稳定梯度并改善优化。
+
+\subsection{Encoder--Decoder、预训练与微调}
+机器翻译等序列到序列任务常采用 encoder--decoder：编码器读源序列并构造表示，解码器逐步生成目标序列；解码器可通过交叉注意力读取编码器输出。三类语言模型结构及典型用途：\begin{itemize}
+\item 解码器模型（GPT、Claude、Llama 等）：自回归生成，不能条件化未来词。
+\item 编码器模型（BERT 等）：双向上下文，适合表示学习和理解任务。
+\item 编码器--解码器模型（T5、Whisper 等）：适合翻译、摘要、语音到文本等输入到输出任务。
+\end{itemize}
+
+语言建模是学习序列概率，利用链式法则
+\[
+P(w_{1:T})=\prod_{t=1}^{T}P(w_t\mid w_{<t}),
+\]
+通常最小化负对数似然/交叉熵。\textbf{预训练}在海量无标注文本上学习通用表示；\textbf{微调}在具体下游任务数据上继续用梯度下降训练，常在顶层增加分类器。预训练提供通用语言知识，微调将其适配到有限的任务标签。
+
+\subsection{局限与比较}
+自注意力的单层计算可直接连接长距离位置且易并行，但标准全注意力对长度 $n$ 的时间和空间复杂度通常为 $O(n^2)$；上下文窗口有限，注意力权重不一定等于可靠解释，模型还可能继承数据偏差。卷积有局部性和位置敏感性；单头自注意力是加权平均；多头注意力用多个投影同时学习不同关系。
+
+\section{总复习：统一框架与高频易错点}
+\subsection{统一的机器学习训练框架}
+几乎所有监督模型都可写成：给定数据 $D$、模型 $h_\theta$ 和损失 $\loss$，求
+\[
+\theta^*=\argmin_\theta\frac1n\sum_{i=1}^{n}\ell(h_\theta(\bm x^{(i)}),y^{(i)})+\lambda\Omega(\theta).
+\]
+决策树通过信息增益贪心分裂；线性回归通过平方误差和解析解/梯度下降学习；神经网络通过交叉熵和反向传播学习；Transformer 只是使用特殊的注意力结构来参数化 $h_\theta$。$\lambda\Omega(\theta)$ 表示正则化，可抑制过拟合。
+
+\subsection{高频易错点}
+\begin{enumerate}
+\item 理性不等于全知：理性是在当前信息下最大化期望表现。
+\item 互斥与独立不同；条件概率的分母不能漏掉。
+\item 熵越大代表越不确定；信息增益是分裂前熵减去分裂后的期望熵。
+\item 训练误差低不代表泛化好；测试集不能参与调参。
+\item 解析解要求矩阵条件良好；梯度下降的学习率过大可能发散，过小则收敛慢。
+\item sigmoid 适合二分类输出；多分类通常用 softmax 与 categorical cross-entropy。
+\item 在注意力中，query 用来发起匹配，key 用来被匹配，value 被加权汇总；缩放因子是 $\sqrt{d_k}$，不是 $d_k$。
+\item 自注意力可并行不等于没有代价：全连接位置关系带来 $O(n^2)$ 复杂度。
+\end{enumerate}
+
+\subsection{建议的考前自测}
+\begin{enumerate}
+\item 给一个 PEAS 场景，判断其七个任务环境维度并说明理由。
+\item 手算一个向量点积、矩阵乘法、梯度和链式法则例子。
+\item 给定 $p,n$ 或各子集计数，计算熵、剩余信息和信息增益。
+\item 推导一元线性回归的 $w_0,w_1$，并比较正规方程、批量 GD、SGD。
+\item 写出一个两层网络的前向计算、二元交叉熵以及一条反向梯度链。
+\item 给定 $Q,K,V$，逐步计算缩放点积注意力、softmax 权重和加权输出。
+\item 解释为什么位置嵌入、因果掩码、多头注意力、预训练和微调分别必要。
+\end{enumerate}
+
+\end{document}

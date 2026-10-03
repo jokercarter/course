@@ -1,0 +1,326 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{microtype}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+
+\newcommand{\cstir}[2]{c(#1,#2)}
+\newcommand{\sstir}[2]{S(#1,#2)}
+
+\begin{document}
+
+\begin{center}
+    {\Large\bfseries MATH 465 -- Homework 4 Solutions}\\[4pt]
+    Due September 29, 2026
+\end{center}
+
+\textbf{Acknowledgment.} I consulted the homework prompt and no other books,
+notes, or students. This write-up was prepared with generative AI assistance.
+
+\textbf{Notation.} The signless Stirling number \(c(n,k)\) counts permutations
+of \(\{1,\ldots,n\}\) having exactly \(k\) cycles. The Stirling number of the
+second kind \(S(n,k)\) counts partitions of an \(n\)-element set into exactly
+\(k\) nonempty unlabeled blocks.
+
+\section*{1. A recurrence for \(c(n,k)\)}
+
+Consider a permutation of \(\{1,\ldots,n\}\), and distinguish the element
+\(n\). There are two disjoint cases.
+
+\begin{itemize}[leftmargin=2em]
+    \item If \(n\) is a one-element cycle, removing it leaves a permutation of
+    \(\{1,\ldots,n-1\}\) with \(k-1\) cycles. There are \(c(n-1,k-1)\) such
+    permutations.
+    \item Otherwise, start with a permutation of \(\{1,\ldots,n-1\}\) with
+    \(k\) cycles and insert \(n\) immediately after one of the existing
+    \(n-1\) elements in its cycle notation. There are \(n-1\) choices of
+    insertion position, and this operation does not change the number of
+    cycles. Thus there are \((n-1)c(n-1,k)\) permutations in this case.
+\end{itemize}
+
+These two cases exhaust all possibilities, so
+\[
+    c(n,k)=c(n-1,k-1)+(n-1)c(n-1,k).
+\]
+The stated conventions make the same argument valid at the boundary values.
+
+\section*{2. Three combinatorial identities}
+
+\subsection*{(a) \(c(n,n-1)=\binom{n}{2}\)}
+
+A permutation of \(n\) elements with \(n-1\) cycles has cycle deficit one:
+relative to \(n\) fixed points, exactly one pair must be combined into a
+2-cycle. Choose the two elements in \(\binom{n}{2}\) ways; their 2-cycle is
+uniquely determined, and all other elements are fixed. Therefore
+\[
+    c(n,n-1)=\binom{n}{2}.
+\]
+
+\subsection*{(b) \(c(n,n-2)=2\binom{n}{3}+3\binom{n}{4}\)}
+
+The cycle deficit is now two. There are exactly two possible cycle structures:
+
+\begin{enumerate}[leftmargin=2em]
+    \item One 3-cycle and all remaining elements fixed. Choose its three
+    elements in \(\binom{n}{3}\) ways. On a specified set of three elements,
+    there are \((3-1)!=2\) distinct 3-cycles, giving
+    \(2\binom{n}{3}\) permutations.
+    \item Two disjoint 2-cycles and all remaining elements fixed. Choose the
+    four elements in \(\binom{n}{4}\) ways. A four-element set can be split
+    into two unlabeled pairs in three ways, giving
+    \(3\binom{n}{4}\) permutations.
+\end{enumerate}
+
+The cases are disjoint and exhaustive, so
+\[
+    c(n,n-2)=2\binom{n}{3}+3\binom{n}{4}.
+\]
+
+\subsection*{(c) \(S(n,n-2)=\binom{n}{3}+3\binom{n}{4}\)}
+
+For a set partition into \(n-2\) blocks, the total block-size deficit from
+the partition into singletons is two. Thus either there is one block of size
+three, or there are two blocks of size two.
+
+In the first case, choose the three elements in \(\binom{n}{3}\) ways. In the
+second case, choose the four elements and partition them into two pairs. There
+are three pairings of a specified four-element set, so this case contributes
+\(3\binom{n}{4}\). Hence
+\[
+    S(n,n-2)=\binom{n}{3}+3\binom{n}{4}.
+\]
+
+\section*{3. Tourists at circular tables with drinks}
+
+Let \(T_n\) be the number of seating-and-drink arrangements for \(n\)
+distinct tourists. We use the auxiliary value \(T_0=1\), representing the
+empty arrangement. Given an arrangement of \(n-1\) tourists, insert tourist
+\(n\) in one of two ways:
+
+\begin{itemize}[leftmargin=2em]
+    \item Tourist \(n\) may form a new one-person table. The new table can
+    choose any of the \(r\) drinks.
+    \item Tourist \(n\) may join an existing table. To do this, choose the
+    tourist who will be immediately to the right of tourist \(n\). There are
+    \(n-1\) choices. Inserting tourist \(n\) in that position preserves the
+    drink assigned to the table.
+\end{itemize}
+
+Thus every arrangement of \(n-1\) tourists produces exactly
+\(r+(n-1)\) arrangements of \(n\) tourists. Conversely, deleting tourist
+\(n\) recovers the unique preceding arrangement, whether \(n\) was alone or
+not. Therefore
+\[
+    T_n=(r+n-1)T_{n-1}.
+\]
+Since \(T_0=1\), iterating gives
+\[
+    T_n=r(r+1)\cdots(r+n-1).
+\]
+
+\section*{4. A hockey-stick identity}
+
+Consider all \((k+1)\)-element subsets of \(\{1,2,\ldots,n+1\}\). Classify
+each subset according to its largest element. If its largest element is
+\(j+1\), where \(k\leq j\leq n\), then the other \(k\) elements can be chosen
+from \(\{1,\ldots,j\}\) in \(\binom{j}{k}\) ways. Hence the total number of
+such subsets is
+\[
+    \sum_{j=k}^{n}\binom{j}{k}.
+\]
+On the other hand, choosing any \((k+1)\)-element subset directly gives
+\(\binom{n+1}{k+1}\) possibilities. Since the two counts describe the same
+set of subsets,
+\[
+    \boxed{\displaystyle \sum_{j=k}^{n}\binom{j}{k}=\binom{n+1}{k+1}}.
+\]
+No recurrence or algebraic manipulation of binomial coefficients is needed.
+
+\section*{5. The sum of cubes}
+
+For every nonnegative integer \(j\),
+\[
+    j^3=6\binom{j}{3}+6\binom{j}{2}+\binom{j}{1}.
+\]
+Summing and applying the identity from Problem 4 gives
+\begin{align*}
+    \sum_{j=0}^{n}j^3
+    &=6\binom{n+1}{4}+6\binom{n+1}{3}+\binom{n+1}{2}\\
+    &=\frac{(n+1)n(n-1)(n-2)}{4}
+      +(n+1)n(n-1)+\frac{n(n+1)}{2}\\
+    &=\boxed{\frac{n^2(n+1)^2}{4}}
+      =\boxed{\left(\frac{n(n+1)}{2}\right)^2}.
+\end{align*}
+
+\section*{6. Linear recurrences}
+
+\subsection*{(a)}
+
+The recurrence has characteristic equation
+\[
+    \lambda^3-2\lambda^2-\lambda+2
+    =(\lambda-2)(\lambda-1)(\lambda+1).
+\]
+The roots are distinct, so
+\[
+    a_n=A2^n+B+C(-1)^n.
+\]
+Using \(a_0=4\), \(a_1=8\), and \(a_2=10\) gives
+\[
+    A+B+C=4,\qquad 2A+B-C=8,\qquad 4A+B+C=10.
+\]
+Subtracting the first equation from the third gives \(A=2\); then
+\(B+C=2\) and \(B-C=4\), so \(B=3\) and \(C=-1\). Therefore
+\[
+    \boxed{a_n=2^{n+1}+3-(-1)^n\qquad(n\geq 0).}
+\]
+
+\subsection*{(b)}
+
+The characteristic equation is
+\[
+    \lambda^3-9\lambda^2+27\lambda-27=(\lambda-3)^3.
+\]
+Thus the general solution is
+\[
+    a_n=(A+Bn+Cn^2)3^n.
+\]
+The initial values yield
+\[
+    A=1,\qquad 3(A+B+C)=3,\qquad 9(A+2B+4C)=27.
+\]
+Hence \(B+C=0\) and \(2B+4C=2\), which give \(B=-1\) and \(C=1\). Thus
+\[
+    \boxed{a_n=(n^2-n+1)3^n\qquad(n\geq 0).}
+\]
+
+\section*{7. A recurrence for \(a_n=(2n-1)3^n+4(-1)^n\)}
+
+The term \((2n-1)3^n\) is a linear combination of \(3^n\) and \(n3^n\),
+so it corresponds to a root \(3\) of multiplicity two. The term \((-1)^n\)
+corresponds to the root \(-1\). Therefore an annihilating characteristic
+polynomial is
+\[
+    (\lambda-3)^2(\lambda+1)
+    =\lambda^3-5\lambda^2+3\lambda+9.
+\]
+Consequently, a third-order homogeneous recurrence is
+\[
+    \boxed{a_n=5a_{n-1}-3a_{n-2}-9a_{n-3}\qquad(n\geq 3).}
+\]
+
+\section*{8. A Fibonacci sum}
+
+Consider tilings of a board of length \(n\) by monomers of length one and
+dominoes of length two. Let \(T_n\) be the number of such tilings. Looking at
+the first tile gives
+\[
+    T_n=T_{n-1}+T_{n-2},\qquad T_0=1,\quad T_1=1.
+\]
+Therefore \(T_n=f_{n+1}\).
+
+If a tiling has exactly \(k\) dominoes, then it has \(n-2k\) monomers and
+there are \(n-k\) tiles in total. Choosing which \(k\) of those tile positions
+are dominoes gives \(\binom{n-k}{k}\) tilings. The possible values are
+\(0\leq k\leq\lfloor n/2\rfloor\). Summing over \(k\),
+\[
+    \boxed{f_{n+1}=\sum_{k=0}^{\lfloor n/2\rfloor}
+    \binom{n-k}{k}}.
+\]
+
+\section*{9. The Fibonacci addition identity}
+
+Again use tilings by monomers and dominoes. Consider the boundary between
+positions \(m\) and \(m+1\) in a board of length \(m+n\). Partition all tilings
+into two disjoint classes.
+
+If no domino crosses the boundary, the first segment of length \(m\) and the
+second segment of length \(n\) can be tiled independently. This gives
+\[
+    f_{m+1}f_{n+1}
+\]
+tilings. If a domino crosses the boundary, remove that domino. The remaining
+segments have lengths \(m-1\) and \(n-1\), which can be tiled in
+\[
+    f_m f_n
+\]
+ways. Every tiling belongs to exactly one of these classes, so
+\[
+    \boxed{f_{m+n+1}=f_{m+1}f_{n+1}+f_mf_n}.
+\]
+
+\section*{10. Compositions into odd parts}
+
+Let \(a_n\) count compositions of \(n\) whose parts are all odd.
+
+\subsection*{(a) The Fibonacci generating function}
+
+Let
+\[
+    F(x)=\sum_{n\geq 0}f_nx^n.
+\]
+Using \(f_0=0\), \(f_1=1\), and \(f_n=f_{n-1}+f_{n-2}\) for \(n\geq2\),
+\begin{align*}
+    F(x)
+    &=x+\sum_{n\geq2}(f_{n-1}+f_{n-2})x^n\\
+    &=x+xF(x)+x^2F(x).
+\end{align*}
+Therefore
+\[
+    \boxed{F(x)=\frac{x}{1-x-x^2}}.
+\]
+
+\subsection*{(b) The generating function for odd-part compositions}
+
+The generating function for one positive odd part is
+\[
+    x+x^3+x^5+\cdots=\frac{x}{1-x^2}.
+\]
+A nonempty composition is a nonempty sequence of such parts. Consequently,
+\begin{align*}
+    A(x)&=\sum_{n\geq1}a_nx^n
+    =\frac{\dfrac{x}{1-x^2}}{1-\dfrac{x}{1-x^2}}\\
+    &=\boxed{\frac{x}{1-x-x^2}}.
+\end{align*}
+Comparing with part (a), the coefficient of \(x^n\) is the same for every
+\(n\geq1\), so
+\[
+    \boxed{a_n=f_n\qquad(n\geq1).}
+\]
+
+\subsection*{(c) A bijection}
+
+Write each odd part uniquely as \(2q+1\). Replace that part by a string
+consisting of \(q\) copies of the part 2 followed by one copy of the part 1:
+\[
+    2q+1\longmapsto (\underbrace{2,\ldots,2}_{q\text{ copies}},1).
+\]
+Apply this replacement to every part of an odd-part composition of \(n\),
+concatenate the resulting strings, and then delete the final 1. The sum of
+the parts decreases by exactly one, so the result is a composition of
+\(n-1\) with all parts equal to 1 or 2. For example,
+\[
+    (5,3,1)\longmapsto (2,2,1,2,1,1)\longmapsto(2,2,1,2,1,).
+\]
+
+For the inverse, start with a composition of \(n-1\) into 1s and 2s, append
+a final 1, and split the sequence immediately after each 1. Each block has
+the form \((2,\ldots,2,1)\), so it corresponds uniquely to an odd part. These
+two operations are inverse to each other, proving the bijection. (For \(n=1\),
+the empty composition of 0 is used.)
+
+Finally, compositions of \(n-1\) into 1s and 2s are exactly tilings of a
+board of length \(n-1\) by monomers and dominoes, and hence are counted by
+\(f_n\). The bijection therefore independently proves
+\[
+    a_n=f_n.
+\]
+
+\end{document}
