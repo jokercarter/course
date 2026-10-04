@@ -1,0 +1,694 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{microtype}
+
+\allowdisplaybreaks
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+
+\newcommand{\pos}{\operatorname{pos}}
+\newcommand{\U}{\mathsf{U}}
+\newcommand{\D}{\mathsf{D}}
+
+\begin{document}
+
+\begin{center}
+    {\Large\bfseries MATH 465 -- Homework 5 Solutions}\\[4pt]
+    Due October 8, 2026\\[8pt]
+    \textbf{Name:} \underline{\hspace{2.5in}}
+\end{center}
+
+\textbf{Acknowledgment.} I consulted the homework prompt and the course
+lecture notes. No students were consulted. Generative AI assistance was used
+in preparing this write-up.
+
+\section*{1. Finite differences and interpolation}
+
+Define
+\[
+    q(t)=p(2t).
+\]
+Then \(q\) has degree at most \(4\), and the given values of \(p\) give the
+following forward-difference table:
+\[
+\begin{array}{c|ccccc}
+t & 0&1&2&3&4\\ \hline
+q(t) & 1&4&13&40&109\\
+\Delta q(t) & 3&9&27&69\\
+\Delta^2q(t) & 6&18&42\\
+\Delta^3q(t) & 12&24\\
+\Delta^4q(t) & 12
+\end{array}
+\]
+The fourth difference is constant because \(q\) has degree at most \(4\).
+
+\subsection*{(a) Values at \(10\) and \(-2\)}
+
+To extend the table to \(t=5\), first extend the successive differences:
+\[
+\begin{aligned}
+\Delta^3q(4)&=\Delta^3q(3)+\Delta^4q(3)=24+12=36,\\
+\Delta^2q(4)&=\Delta^2q(3)+\Delta^3q(4)=42+36=78,\\
+\Delta q(4)&=\Delta q(3)+\Delta^2q(4)=69+78=147.
+\end{aligned}
+\]
+Therefore
+\[
+    q(5)=q(4)+\Delta q(4)=109+147=256,
+\]
+and hence
+\[
+    \boxed{p(10)=256}.
+\]
+
+Newton's forward interpolation formula gives
+\[
+    q(t)=q(0)+\Delta q(0)\binom{t}{1}
+    +\Delta^2q(0)\binom{t}{2}
+    +\Delta^3q(0)\binom{t}{3}
+    +\Delta^4q(0)\binom{t}{4},
+\]
+so in this case
+\[
+    q(t)=1+3\binom{t}{1}+6\binom{t}{2}
+             +12\binom{t}{3}+12\binom{t}{4}.
+\]
+At \(t=-1\), the generalized binomial identity
+\(\binom{-1}{k}=(-1)^k\) gives
+\[
+    q(-1)=1-3+6-12+12=4.
+\]
+Since \(p(-2)=q(-1)\),
+\[
+    \boxed{p(-2)=4}.
+\]
+
+\subsection*{(b) Formula and uniqueness}
+
+Substituting \(t=x/2\) into the interpolation formula yields
+\[
+\boxed{
+p(x)=1+3\binom{x/2}{1}+6\binom{x/2}{2}
+        +12\binom{x/2}{3}+12\binom{x/2}{4}.
+}
+\]
+This polynomial is uniquely determined by the five data values. Indeed, if
+\(p_1\) and \(p_2\) both have degree at most \(4\) and satisfy the given
+conditions, then \(p_1-p_2\) has the five distinct roots
+\(0,2,4,6,8\). A nonzero polynomial of degree at most \(4\) cannot have five
+distinct roots, so \(p_1-p_2\) is identically zero.
+
+\section*{2. Integer-valued polynomials}
+
+\subsection*{(a) Integer values at every integer}
+
+Let \(\Delta f(x)=f(x+1)-f(x)\). The Newton expansion for a polynomial of
+degree at most \(d\) is
+\[
+    p(x)=\sum_{k=0}^{d}\Delta^k p(0)\binom{x}{k},
+    \qquad
+    \binom{x}{k}=\frac{x(x-1)\cdots(x-k+1)}{k!}.
+\]
+To justify this expansion, note that
+\(\Delta\binom{x}{k}=\binom{x}{k-1}\), with
+\(\binom{x}{0}=1\), so the successive differences of the right-hand side
+at \(x=0\) are exactly \(\Delta^k p(0)\). The two sides are polynomials of
+degree at most \(d\) with the same values at \(0,1,\ldots,d\), and therefore
+they are equal.
+
+Because \(p(0),\ldots,p(d)\) are integers, every
+\(\Delta^k p(0)\) is an integer: each finite difference is an integer linear
+combination of these given values. For a nonnegative integer \(m\),
+\(\binom{m}{k}\) is an integer in the usual sense. For a negative integer
+\(m\),
+\[
+    \binom{m}{k}
+    =(-1)^k\binom{-m+k-1}{k},
+\]
+which is also an integer. Thus every term in the Newton expansion is an
+integer when \(x=m\in\mathbb Z\), and consequently
+\[
+    \boxed{p(m)\in\mathbb Z\quad\text{for every }m\in\mathbb Z.}
+\]
+
+\subsection*{(b) Ordinary coefficients need not be integers}
+
+No. For example, take \(d=2\) and
+\[
+    p(x)=\binom{x}{2}=\frac{x^2-x}{2}.
+\]
+Then
+\[
+    p(0)=0,\qquad p(1)=0,\qquad p(2)=1
+\]
+are integers, and part (a) shows that \(p(m)\) is an integer for every
+integer \(m\). However, the coefficients of \(x^2\) and \(x\) in the
+ordinary power basis are \(1/2\) and \(-1/2\), respectively. Hence
+integer-valuedness does not imply integer coefficients in the power basis.
+
+\section*{3. A Stirling-number summation identity}
+
+\subsection*{(a) Proof of the identity}
+
+Using the permitted identity
+\[
+    j^m=\sum_{k=0}^{m}S(m,k)(j)_k,
+    \qquad
+    (j)_k=j(j-1)\cdots(j-k+1),
+\]
+we obtain
+\[
+\begin{aligned}
+\sum_{j=0}^{N-1}j^m
+  &=\sum_{j=0}^{N-1}\sum_{k=0}^{m}S(m,k)(j)_k\\
+  &=\sum_{k=0}^{m}S(m,k)\sum_{j=0}^{N-1}k!\binom{j}{k}\\
+  &=\sum_{k=0}^{m}k!S(m,k)\sum_{j=0}^{N-1}\binom{j}{k}.
+\end{aligned}
+\]
+The hockey-stick identity gives
+\[
+    \sum_{j=0}^{N-1}\binom{j}{k}=\binom{N}{k+1}.
+\]
+This remains true for \(k=0\), and when \(N=0\) both sides of the desired
+identity are empty sums or zero binomial coefficients. Therefore
+\[
+\boxed{
+\sum_{j=0}^{N-1}j^m
+    =\sum_{k=0}^{m}k!S(m,k)\binom{N}{k+1}.
+}
+\]
+
+\subsection*{(b) The fourth-power sum}
+
+The relevant Stirling numbers of the second kind are
+\[
+    S(4,0)=0,\qquad S(4,1)=1,\qquad S(4,2)=7,\qquad
+    S(4,3)=6,\qquad S(4,4)=1.
+\]
+Multiplying by the corresponding factorials gives
+\[
+\begin{array}{c|ccccc}
+k&0&1&2&3&4\\ \hline
+k!S(4,k)&0&1&14&36&24
+\end{array}
+\]
+and hence
+\[
+\boxed{
+\sum_{j=0}^{N-1}j^4
+   =\binom{N}{2}+14\binom{N}{3}
+      +36\binom{N}{4}+24\binom{N}{5}.
+}
+\]
+
+\section*{4. A nonhomogeneous linear recurrence}
+
+\subsection*{(a) A resonant trial sequence cannot work}
+
+If \(h_n=A2^n\), then the left-hand side of the recurrence is
+\[
+\begin{aligned}
+h_n-3h_{n-1}+2h_{n-2}
+  &=A2^{n-2}(4-6+2)\\
+  &=0.
+\end{aligned}
+\]
+The right-hand side is \(2^n\ne0\). Thus no sequence of the form
+\(h_n=A2^n\), with \(A\) constant, satisfies the recurrence.
+
+\subsection*{(b) Closed formula}
+
+The homogeneous recurrence has characteristic polynomial
+\[
+    \lambda^2-3\lambda+2=(\lambda-1)(\lambda-2),
+\]
+so
+\[
+    h_n^{(h)}=C+D2^n.
+\]
+Because \(2\) is a root of the characteristic polynomial, use the resonant
+particular trial solution \(h_n^{(p)}=E\,n2^n\). Substitution gives
+\[
+\begin{aligned}
+h_n^{(p)}-3h_{n-1}^{(p)}+2h_{n-2}^{(p)}
+ &=E2^{n-2}\bigl(4n-6(n-1)+2(n-2)\bigr)\\
+ &=E2^{n-1}.
+\end{aligned}
+\]
+Equating this with \(2^n\) gives \(E=2\). Therefore
+\[
+    h_n=C+D2^n+2n2^n.
+\]
+The initial conditions imply
+\[
+    C+D=0,\qquad C+2D+4=1.
+\]
+Thus \(D=-3\) and \(C=3\), and
+\[
+\boxed{
+    h_n=3+(2n-3)2^n\qquad(n\geq0).
+}
+\]
+The formula gives \(h_0=0\) and \(h_1=1\), and the substitution above shows
+that it satisfies the recurrence.
+
+\section*{5. Paths bounded below by a horizontal line}
+
+Write \(\U=(1,1)\) and \(\D=(1,-1)\). Let \(A_r\) denote the number of paths
+from \((0,0)\) to \((2n,0)\) that stay in \(y\geq-r\).
+
+\subsection*{(a) Paths staying in \(y\geq-r\)}
+
+There are \(\binom{2n}{n}\) unrestricted paths, since a path ending at
+height \(0\) has \(n\) up-steps and \(n\) down-steps. A path that violates
+the condition \(y\geq-r\) must first hit the line \(y=-(r+1)\). Reflect the
+portion of the path from its beginning through this first hitting point
+across the line \(y=-(r+1)\). The starting point \((0,0)\) is sent to
+\((0,-2r-2)\), while the endpoint remains \((2n,0)\).
+
+This reflection is a bijection between bad paths and unrestricted paths from
+\((0,-2r-2)\) to \((2n,0)\). Such a path has \(n+r+1\) up-steps and
+\(n-r-1\) down-steps, so there are
+\(\binom{2n}{n+r+1}\) of them. Consequently,
+\[
+\boxed{
+    A_r=\binom{2n}{n}-\binom{2n}{n+r+1}.
+}
+\]
+The stated binomial convention makes this valid also when \(r=n\).
+
+\subsection*{(b) Paths with minimum height exactly \(-r\)}
+
+For \(r\geq1\), the paths staying above \(-r\) but not above \(-(r-1)\)
+are counted by \(A_r-A_{r-1}\). Therefore
+\[
+\begin{aligned}
+A_r-A_{r-1}
+ &=\left[\binom{2n}{n}-\binom{2n}{n+r+1}\right]
+   -\left[\binom{2n}{n}-\binom{2n}{n+r}\right]\\
+ &=\binom{2n}{n+r}-\binom{2n}{n+r+1}.
+\end{aligned}
+\]
+When \(r=0\), every path with minimum height exactly \(0\) is simply a path
+staying in \(y\geq0\), and the same expression is \(A_0\). Hence for every
+\(0\leq r\leq n\),
+\[
+\boxed{
+\#\{\text{paths with minimum height exactly }-r\}
+ =\binom{2n}{n+r}-\binom{2n}{n+r+1}.
+}
+\]
+
+\section*{6. Triangulations and Catalan numbers}
+
+\subsection*{(a) The recurrence}
+
+Consider the triangle incident to the boundary edge \(v_0v_{n+1}\). Its
+third vertex is \(v_{k+1}\) for a unique \(k\) with \(0\leq k\leq n-1\).
+The diagonal sides of this triangle split the polygon into two independent
+polygons:
+\[
+    v_0,v_1,\ldots,v_{k+1}
+    \quad\text{and}\quad
+    v_{k+1},v_{k+2},\ldots,v_{n+1}.
+\]
+The first has \(k+2\) vertices and hence \(t_k\) triangulations; the second
+has \(n-k+1\) vertices and hence \(t_{n-k-1}\) triangulations. Conversely,
+choosing triangulations of these two subpolygons and adjoining the
+distinguished triangle gives a unique triangulation of the original
+polygon. Thus
+\[
+\boxed{
+    t_0=1,\qquad
+    t_n=\sum_{k=0}^{n-1}t_k\,t_{n-1-k}\quad(n\geq1).
+}
+\]
+
+The Catalan numbers are characterized by the same recurrence
+\[
+    C_0=1,\qquad C_n=\sum_{k=0}^{n-1}C_kC_{n-1-k}.
+\]
+Induction on \(n\) therefore gives \(t_n=C_n\) for every \(n\). Equivalently,
+the generating function \(C(z)=\sum_{n\geq0}C_nz^n\) satisfies
+\(C(z)=1+zC(z)^2\), whose solution with constant term \(1\) is
+\[
+    C(z)=\frac{1-\sqrt{1-4z}}{2z}
+       =\sum_{n\geq0}\frac{1}{n+1}\binom{2n}{n}z^n.
+\]
+Thus \(t_n=C_n=\frac{1}{n+1}\binom{2n}{n}\).
+
+\subsection*{(b) A prescribed diagonal}
+
+For \(1\leq r\leq n-1\), the diagonal \(v_0v_{r+1}\) splits the polygon into
+the subpolygons
+\[
+    v_0,v_1,\ldots,v_{r+1}
+    \quad\text{and}\quad
+    v_0,v_{r+1},v_{r+2},\ldots,v_{n+1}.
+\]
+Their triangulations can be chosen independently. They have \(r+2\) and
+\(n-r+2\) vertices, respectively, so the number of triangulations containing
+the diagonal is
+\[
+\boxed{t_rt_{n-r}=C_rC_{n-r}.}
+\]
+
+\section*{7. Fully bracketed expressions and ballot sequences}
+
+\subsection*{(a) The first construction is not injective}
+
+The two distinct bracketings
+\[
+    ((a_1a_2)a_3)
+    \qquad\text{and}\qquad
+    (a_1(a_2a_3))
+\]
+both produce the word \(++--\): in either case there are two opening
+parentheses followed, after deleting the letters, by two closing parentheses. Hence the construction in part (a) is not injective.
+
+\subsection*{(b) The second construction gives a ballot sequence}
+
+There are \(n\) opening parentheses and \(n\) closing parentheses in a
+bracketing on \(n+1\) letters. After deleting all closing parentheses and
+the final letter \(a_{n+1}\), the construction therefore produces a word of
+length \(2n\), containing \(n\) plus signs and \(n\) minus signs.
+
+To check the prefix condition, view a bracketing as an ordered full binary
+tree: each opening parenthesis is an internal node and each letter is a
+leaf. Reading the expression from left to right is preorder traversal. Start
+with one available child slot. Reading an opening parenthesis fills one slot
+and creates two, so the number of available slots increases by one. Reading a
+letter fills one slot, so the number decreases by one. Before the final leaf
+\(a_{n+1}\) is read, at least one slot remains. Thus every prefix of the
+constructed word satisfies
+\[
+    1+\#(+)-\#(-)\geq1,
+\]
+or equivalently \(\#(+)\geq\#(-)\). The word is therefore a ballot sequence.
+
+\subsection*{(c) The inverse and the enumeration}
+
+Let \(w\) be a ballot sequence of length \(2n\) with \(n\) plus signs and
+\(n\) minus signs. Append one additional minus sign, which will represent
+the final letter \(a_{n+1}\). Reconstruct an ordered full binary tree by
+processing this extended word from left to right:
+\begin{itemize}[leftmargin=2em]
+    \item on a \(+\), fill the leftmost available slot with an internal node
+    and create its two ordered child slots;
+    \item on a \(-\), fill the leftmost available slot with a leaf.
+\end{itemize}
+After any prefix of \(w\), the number of slots is
+\(1+\#(+)-\#(-)\geq1\); after the final appended minus it is zero. Thus the
+algorithm is well-defined and produces a full binary tree with \(n\) internal
+nodes and \(n+1\) leaves. Label the leaves from left to right by
+\(a_1,\ldots,a_{n+1}\), and write an internal node with left and right
+subexpressions \(U,V\) as \((UV)\). This yields a fully bracketed expression.
+
+For an expression, the same slot procedure reads its preorder tree and
+recovers exactly the original tree. Conversely, the reconstructed tree has
+the prescribed preorder word, so deleting closing parentheses and the final
+leaf returns \(w\). The two constructions are therefore inverse bijections.
+
+The number of ballot sequences of length \(2n\) is, by the reflection
+principle,
+\[
+    \binom{2n}{n}-\binom{2n}{n+1}
+    =\frac{1}{n+1}\binom{2n}{n}=C_n.
+\]
+Consequently, the number of fully bracketed expressions on \(n+1\) letters is
+\[
+\boxed{C_n=\frac{1}{n+1}\binom{2n}{n}.}
+\]
+
+\section*{8. Dyck paths counted by peaks}
+
+\subsection*{(a) The first three polynomials}
+
+For semilength \(1\), the only path is \(\U\D\), with one peak:
+\[
+    \boxed{P_1(q)=q}.
+\]
+For semilength \(2\), the paths are \(\U\U\D\D\) and
+\(\U\D\U\D\), with one and two peaks:
+\[
+    \boxed{P_2(q)=q+q^2}.
+\]
+For semilength \(3\), the five paths have peak counts
+\(1,2,2,2,3\), respectively. Thus
+\[
+    \boxed{P_3(q)=q+3q^2+q^3}.
+\]
+
+\subsection*{(b) A first-return recurrence}
+
+Take a Dyck path \(D\) of semilength \(n+1\), and write its unique
+first-return decomposition as
+\[
+    D=\U A\D B,
+\]
+where \(A\) is a Dyck path of semilength \(k\) and \(B\) is a Dyck path of
+semilength \(n-k\), for some \(0\leq k\leq n\).
+
+If \(k=0\), the initial \(\U\D\) is a peak and contributes a factor \(q\);
+the remaining path \(B\) contributes \(P_n(q)\). This case contributes
+\(qP_n(q)\). If \(k\geq1\), then \(A\) begins with an up-step, so the initial
+\(\U\) is not immediately followed by a down-step. The peaks are exactly
+those in \(A\) and \(B\), giving \(P_k(q)P_{n-k}(q)\). Summing over all
+possibilities,
+\[
+\boxed{
+    P_{n+1}(q)=qP_n(q)+\sum_{k=1}^{n}P_k(q)P_{n-k}(q)
+    \qquad(n\geq0).
+}
+\]
+
+\subsection*{(c) Peaks and leaves in an ordered rooted tree}
+
+For an ordered rooted tree with \(n+1\) vertices, traverse each edge away from
+the root and record an up-step when an edge is traversed downward and a
+down-step when that edge is traversed upward. Each of the \(n\) edges is
+traversed twice, so this gives a Dyck path of length \(2n\).
+
+An up-step is immediately followed by a down-step exactly when the traversal
+reaches a vertex and has no child to visit before returning. This occurs
+exactly at a leaf. Conversely, every nonroot leaf creates such a peak.
+Since \(n\geq1\), the root is not a leaf, so
+\[
+\boxed{\text{the number of peaks equals the number of leaves of the tree}.}
+\]
+
+\section*{9. 132-avoiding permutations and Rothe diagrams}
+
+For a permutation \(\sigma\), write
+\[
+    \pos(j)=\sigma^{-1}(j).
+\]
+Thus a cell in row \(i\) and column \(j\) of the Rothe diagram is present
+exactly when
+\[
+    j<\sigma(i)\quad\text{and}\quad \pos(j)>i.
+\]
+Let \(d_i\) be the number of cells in row \(i\).
+
+\subsection*{(a) Characterization by row lengths}
+
+\paragraph{132-avoidance implies left-justified rows.}
+Suppose \(\sigma\) is 132-avoiding, and suppose row \(i\) contains a cell in
+column \(j\). If some \(\ell<j\) were not in row \(i\), then
+\(\ell<j<\sigma(i)\), and \(\pos(\ell)<i\), while \(\pos(j)>i\). Set
+\(h=\pos(\ell)\) and \(k=\pos(j)\). Then
+\[
+    h<i<k,\qquad \sigma(h)=\ell<j=\sigma(k)<\sigma(i),
+\]
+which is a 132 pattern. Therefore every row consists of its leftmost
+\(d_i\) cells.
+
+\paragraph{132-avoidance implies weakly decreasing row lengths.}
+Assume the rows are left-justified. If \(d_{i+1}>d_i\), let
+\(j=d_i+1\). Then \((i+1,j)\) is a cell, so
+\[
+    j<\sigma(i+1),\qquad \pos(j)>i+1.
+\]
+The cell \((i,j)\) is absent, and \(\pos(j)>i\), so \(j\geq\sigma(i)\).
+Equality would force \(\pos(j)=i\), impossible; hence
+\[
+    \sigma(i)<j<\sigma(i+1).
+\]
+Using \(k=\pos(j)\), we have
+\[
+    i<i+1<k,\qquad \sigma(i)<j=\sigma(k)<\sigma(i+1),
+\]
+again a 132 pattern. Hence \(d_i\geq d_{i+1}\) for every \(i\).
+
+\paragraph{The converse.}
+Now suppose every row is left-justified and
+\[
+    d_1\geq d_2\geq\cdots\geq d_n\geq0.
+\]
+If \(i<j<k\) formed a 132 pattern, put \(c=\sigma(k)\). Since
+\(c<\sigma(j)\) and \(\pos(c)=k>j\), the cell \((j,c)\) lies in row \(j\).
+Left-justification gives \(d_j\geq c\), and weak decrease gives
+\(d_i\geq d_j\geq c\). Thus \((i,c)\) would be a cell, which would imply
+\(c<\sigma(i)\), contradicting the assumed inequality
+\(\sigma(i)<c\). Therefore \(\sigma\) is 132-avoiding.
+
+\paragraph{The bound on row lengths.}
+Every cell in row \(i\) has its column value in a position strictly below
+\(i\). There are only \(n-i\) such positions, and distinct cells have
+distinct column values. Consequently
+\[
+\boxed{d_i\leq n-i\qquad(1\leq i\leq n).}
+\]
+
+\subsection*{(b) A bijection with Dyck paths}
+
+The characterization in part (a) shows that a 132-avoiding permutation is
+encoded by a sequence
+\[
+    d_1\geq d_2\geq\cdots\geq d_n\geq0,
+    \qquad d_i\leq n-i.
+\]
+We first explain how to recover the permutation from such a sequence. Process
+the rows from \(i=1\) to \(n\). At step \(i\), let \(\sigma(i)\) be the
+smallest unused value that is strictly larger than \(d_i\):
+\[
+\boxed{\sigma(i)=\min\{j>d_i:\ j\text{ has not been used in rows }1,\ldots,i-1\}.}
+\]
+This set is nonempty. Indeed, all values at most \(d_i\) are still unused,
+because earlier rows have lengths at least \(d_i\) and therefore chose values
+larger than \(d_i\). The number of unused values larger than \(d_i\) is at
+least
+\[
+    n-d_i-(i-1)\geq1
+\]
+by \(d_i\leq n-i\).
+
+The values \(1,\ldots,d_i\) are then placed below row \(i\), so they give
+exactly \(d_i\) cells. Any value \(j\) with \(d_i<j<\sigma(i)\) was already
+used, by the minimality in the displayed rule, so it is not below row \(i\).
+Thus the resulting permutation has precisely the prescribed Rothe diagram.
+The same minimality condition shows that no other permutation can have these
+row lengths, so the reconstruction is unique.
+
+It remains to convert the row-length sequence into a Dyck path. Define
+\[
+    e_i=d_{n-i+1}\qquad(1\leq i\leq n).
+\]
+Then
+\[
+    0\leq e_1\leq e_2\leq\cdots\leq e_n,
+    \qquad e_i\leq i-1.
+\]
+Construct the word
+\[
+\begin{aligned}
+W(d)={}&
+\D^{e_1}\U
+\D^{e_2-e_1}\U
+\cdots
+\D^{e_n-e_{n-1}}\U
+\D^{n-e_n}.
+\end{aligned}
+\]
+Here \(\U=(1,1)\) and \(\D=(1,-1)\), and a zero exponent means that the
+corresponding run is empty. The word has \(n\) up-steps and \(n\) down-steps.
+Before the \(i\)-th up-step there are \(e_i\leq i-1\) down-steps, so no
+prefix goes below height \(0\). Hence \(W(d)\) is a Dyck path of length
+\(2n\).
+
+Conversely, given a Dyck path, let \(e_i\) be the number of down-steps before
+its \(i\)-th up-step. The Dyck condition gives \(e_i\leq i-1\), and the
+sequence \(e_i\) is weakly increasing. Set
+\[
+    d_i=e_{n-i+1}.
+\]
+Then \(d_1\geq\cdots\geq d_n\geq0\) and \(d_i\leq n-i\). Reconstructing
+\(\sigma\) by the smallest-unused-value rule above gives a unique
+132-avoiding permutation. These two procedures are inverse, so they give an
+explicit bijection between 132-avoiding permutations in \(S_n\) and Dyck
+paths of length \(2n\). Therefore
+\[
+\boxed{\#\{\text{132-avoiding permutations in }S_n\}
+      =C_n=\frac{1}{n+1}\binom{2n}{n}.}
+\]
+
+\section*{10. Monomials in a product of partial sums}
+
+\[
+    Q_n(x_1,\ldots,x_n)=\prod_{i=1}^{n}(x_1+\cdots+x_i).
+\]
+For a monomial \(x_1^{b_1}\cdots x_n^{b_n}\), necessarily
+\(\sum_{i=1}^n b_i=n\), because one variable is chosen from each of the
+\(n\) factors.
+
+\subsection*{(a) The prefix condition}
+
+Suppose the monomial occurs. In the first \(j\) factors, every selected
+variable has index at most \(j\). Those \(j\) selections therefore contribute
+to the total exponent of one of \(x_1,\ldots,x_j\). Consequently,
+\[
+    b_1+\cdots+b_j\geq j
+    \qquad(1\leq j\leq n).
+\]
+
+Conversely, assume \(\sum_{i=1}^n b_i=n\) and all these prefix inequalities
+hold. Assign a variable to each factor greedily from \(i=1\) through \(n\),
+using exactly \(b_j\) assignments of \(x_j\). At step \(i\), there must be an
+unfilled demand among \(x_1,\ldots,x_i\). Otherwise all demands in this set
+would already have been filled by the first \(i-1\) factors, which would imply
+\(b_1+\cdots+b_i\leq i-1\), contradicting the prefix condition. Choose any
+such \(x_j\) with \(j\leq i\) from the \(i\)-th factor. After all \(n\)
+steps, every demand is filled, so the monomial occurs in \(Q_n\). Thus
+\[
+\boxed{
+x_1^{b_1}\cdots x_n^{b_n}\text{ occurs in }Q_n
+\iff
+\sum_{i=1}^n b_i=n\ \text{and}\ 
+\sum_{i=1}^j b_i\geq j\ (1\leq j\leq n).
+}
+\]
+
+\subsection*{(b) Fixing the exponent of \(x_1\)}
+
+Encode an exponent vector satisfying part (a) by the word
+\[
+    W(b)=\U^{b_1}\D\,\U^{b_2}\D\cdots
+          \U^{b_n}\D.
+\]
+There are \(n\) up-steps in total and \(n\) down-steps. After the \(j\)-th
+down-step, the height is
+\[
+    (b_1+\cdots+b_j)-j,
+\]
+so the prefix inequalities in part (a) are exactly the Dyck-path condition.
+If \(b_1=r\), the path begins with exactly \(r\) up-steps followed by a
+down-step. Thus we count Dyck paths of semilength \(n\) whose initial run of
+up-steps has length exactly \(r\).
+
+After the forced prefix \(\U^r\D\), the remaining path has length
+\(2n-r-1\), starts at height \(r-1\), ends at height \(0\), and contains
+\(n-r\) up-steps and \(n-1\) down-steps. Ignoring the nonnegativity
+condition, there are
+\(\binom{2n-r-1}{n-r}\) such paths. Reflecting the initial segment through
+the first visit to \(y=-1\) is a bijection from the bad paths to paths
+starting at height \(-r-1\) and ending at \(0\). A reflected path has \(n\)
+up-steps, so the number of bad paths is
+\(\binom{2n-r-1}{n}\). Therefore the number of exponent vectors, and hence of
+distinct monomials, is
+\[
+\boxed{
+\#\{\text{monomials with exponent of }x_1\text{ equal to }r\}
+ =\binom{2n-r-1}{n-r}-\binom{2n-r-1}{n},
+\qquad 1\leq r\leq n.
+}
+\]
+
+\end{document}
+
+

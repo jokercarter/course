@@ -1,0 +1,418 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist{nosep}
+\renewcommand{\arraystretch}{1.25}
+\newcommand{\entropy}{H}
+\newcommand{\IG}{\operatorname{IG}}
+\newcommand{\Rtwo}{R^2}
+\newcommand{\E}{\mathbb{E}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{14pt}
+\lhead{EECS 492 -- Homework 1}
+\rhead{Written Solutions}
+\cfoot{\thepage\ of \pageref{LastPage}}
+
+\title{\vspace{-1.5cm}\textbf{EECS 492 -- Homework 1}\\[2pt]
+\large Written Solutions}
+\author{}
+\date{Fall 2026}
+
+\begin{document}
+\maketitle
+\vspace{-0.8cm}
+
+\section{Designing Agents}
+
+\subsection*{1(a) PEAS description}
+The task environment contains a repeated sequence of tic-tac-toe games.  At the
+end of a game, the board is cleared (or a fresh sheet is provided) and the next
+game begins.  A PEAS description is therefore:
+
+\begin{center}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.17\textwidth}
+                >{\raggedright\arraybackslash}p{0.75\textwidth}}
+\toprule
+\textbf{Component} & \textbf{Specification}\\
+\midrule
+Performance measure &
+Correctly recognize the board geometry, the symbols $X$ and $O$, and empty
+cells; make only legal moves in empty cells; choose a move that is optimal for
+the agent's objective; correctly detect a win, loss, or tie; and reset and
+repeat the procedure reliably over arbitrarily many games.  Secondary costs
+include drawing errors, sensing errors, unnecessary pen motion, and time.\\
+\addlinespace
+Environment &
+A physical sheet of paper containing a $3\times3$ grid, the current markings,
+the pen and the board location, an opposing human or robot, and the sequence of
+past game outcomes.  Between games the board is reset.\\
+\addlinespace
+Actuators &
+A pen-moving mechanism, a pen-lowering/raising or contact mechanism, and a
+marker-drawing action that selects one of the nine cells.  The agent may also
+signal the result of a game and request or perform a reset.\\
+\addlinespace
+Sensors &
+A camera or other visual sensor for locating the grid, classifying $X$ versus
+$O$, and detecting empty cells; position/contact feedback for the pen; and a
+state-change detector for recognizing the opponent's move and the terminal
+board state.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Assumptions.} The paper remains within the sensing workspace, the grid
+is not intentionally destroyed, and illumination and handwriting vary within
+the sensor's operating range.  The opponent is allowed to be either a person
+or another agent and may choose any legal move.
+
+\subsection*{1(b) Environment characteristics}
+The classification below is for the physical robot described in the question,
+not for an idealized symbolic program.  The distinction matters because sensing
+and pen motion introduce uncertainty even though the game rules themselves are
+simple.
+
+{\footnotesize
+\renewcommand{\arraystretch}{1.10}
+\begin{center}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.24\textwidth}
+                >{\raggedright\arraybackslash}p{0.18\textwidth}
+                >{\raggedright\arraybackslash}p{0.50\textwidth}}
+\toprule
+\textbf{Dimension} & \textbf{Classification} & \textbf{Justification}\\
+\midrule
+Observability & Partially observable &
+The true board state is not directly available as symbols.  The agent must infer
+it from images, and glare, occlusion, ambiguous handwriting, or an imperfect
+classifier can hide whether a cell is empty or which marker it contains.\\
+\addlinespace
+Number of agents & Multi-agent &
+The opponent selects actions that change the board and therefore changes the
+agent's future choices.\\
+\addlinespace
+Transition model & Nondeterministic &
+The opponent's action is not controlled by the agent, and sensing or drawing can
+fail.  If all perception and actuation were assumed perfect and the opponent's
+move were supplied as an action, the symbolic game transition would instead be
+deterministic.\\
+\addlinespace
+Temporal dependence & Sequential &
+Each move changes the legal action set and can determine later wins, losses, or
+ties.  The complete task is a sequence of such games, with a reset between
+episodes.\\
+\addlinespace
+Change while deliberating & Dynamic &
+The opponent or the physical setup may change while the robot is sensing or
+planning.  If the opponent is required to wait and the sheet is fixed during
+the robot's turn, the game is only semi-dynamic during that turn; the physical
+specification here permits changes, so ``dynamic'' is the conservative label.\\
+\addlinespace
+State and actions & Discrete at the game level &
+There are finitely many cells, marker values, legal moves, and terminal results.
+Pen trajectories and camera measurements are continuous physical quantities,
+but they are abstracted into discrete game states and actions.\\
+\addlinespace
+Model knowledge & Known at the rule level; uncertain at the physical level &
+The agent can be programmed with the tic-tac-toe rules and winning condition.
+It may not know the exact camera noise, pen-placement error, lighting, or
+opponent policy before calibration and experience.\\
+\bottomrule
+\end{tabular}
+\end{center}
+}
+
+\section{K-Nearest Neighbors}
+
+The query point is
+\[
+q=(8,0,3).
+\]
+For Trial $m$, only the first $m$ coordinates are used, so
+\[
+d_m(q,x_i)=\left(\sum_{j=1}^{m}(q_j-x_{ij})^2\right)^{1/2}.
+\]
+
+\subsection*{2(a) Distances}
+The individual calculations are:
+
+\begin{align*}
+\text{Trial 1: }d_1(q,x_1)&=|8-5|=3,\\
+d_1(q,x_2)&=|8-7|=1,\\
+d_1(q,x_3)&=|8-0|=8,\\
+d_1(q,x_4)&=|8-2|=6,\\
+d_1(q,x_5)&=|8-9|=1,\\
+d_1(q,x_6)&=|8-3|=5.
+\end{align*}
+
+For Trial 2, the first two coordinates give
+\begin{align*}
+ d_2(q,x_1)&=\sqrt{(8-5)^2+(0-2)^2}=\sqrt{13}=3.606,\\
+ d_2(q,x_2)&=\sqrt{(8-7)^2+(0-6)^2}=\sqrt{37}=6.083,\\
+ d_2(q,x_3)&=\sqrt{(8-0)^2+(0-6)^2}=\sqrt{100}=10.000,\\
+ d_2(q,x_4)&=\sqrt{(8-2)^2+(0-7)^2}=\sqrt{85}=9.220,\\
+ d_2(q,x_5)&=\sqrt{(8-9)^2+(0-2)^2}=\sqrt{5}=2.236,\\
+ d_2(q,x_6)&=\sqrt{(8-3)^2+(0-5)^2}=\sqrt{50}=7.071.
+\end{align*}
+
+For Trial 3, all three coordinates give
+\begin{align*}
+ d_3(q,x_1)&=\sqrt{(8-5)^2+(0-2)^2+(3-8)^2}=\sqrt{38}=6.164,\\
+ d_3(q,x_2)&=\sqrt{(8-7)^2+(0-6)^2+(3-1)^2}=\sqrt{41}=6.403,\\
+ d_3(q,x_3)&=\sqrt{(8-0)^2+(0-6)^2+(3-0)^2}=\sqrt{109}=10.440,\\
+ d_3(q,x_4)&=\sqrt{(8-2)^2+(0-7)^2+(3-4)^2}=\sqrt{86}=9.274,\\
+ d_3(q,x_5)&=\sqrt{(8-9)^2+(0-2)^2+(3-4)^2}=\sqrt{6}=2.449,\\
+ d_3(q,x_6)&=\sqrt{(8-3)^2+(0-5)^2+(3-8)^2}=\sqrt{75}=8.660.
+\end{align*}
+
+Thus the requested table is:
+\begin{center}
+\begin{tabular}{c|ccc}
+\toprule
+Point & Trial 1 & Trial 2 & Trial 3\\
+\midrule
+$x_1$ & 3.000 & 3.606 & 6.164\\
+$x_2$ & 1.000 & 6.083 & 6.403\\
+$x_3$ & 8.000 & 10.000 & 10.440\\
+$x_4$ & 6.000 & 9.220 & 9.274\\
+$x_5$ & 1.000 & 2.236 & 2.449\\
+$x_6$ & 5.000 & 7.071 & 8.660\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{2(b) $k=3$ classification}
+The training labels are $y_1=A$, $y_2=B$, $y_3=A$, $y_4=B$,
+$y_5=A$, and $y_6=B$.
+
+\begin{itemize}
+    \item \textbf{Trial 1.} The sorted distances are $1$ for $x_2$, $1$ for
+    $x_5$, and $3$ for $x_1$ (the first two are tied).  The three labels are
+    $B,A,A$, so the majority is $A$.  The nearest-neighbor set is
+    \(\{x_2,x_5,x_1\}\), up to the order of the tied points.
+    \item \textbf{Trial 2.} The three smallest distances are for
+    $x_5,x_1,x_2$, with labels $A,A,B$.  The prediction is \(\boxed{A}\).
+    \item \textbf{Trial 3.} The three smallest distances are for
+    $x_5,x_1,x_2$, with labels $A,A,B$.  The prediction is \(\boxed{A}\).
+\end{itemize}
+Therefore, all three trials classify the query as $A$.
+
+\section{Decision Tree}
+
+For a label set $S$, use
+\[
+\entropy(S)=-\sum_{c\in\{\mathrm{Yes},\mathrm{No}\}}
+ p_c\log_2 p_c,
+\qquad
+\IG(S,A)=\entropy(S)-\sum_{v\in\operatorname{Values}(A)}
+ \frac{|S_v|}{|S|}\entropy(S_v).
+\]
+The data contain $6$ ``Yes'' labels and $4$ ``No'' labels.  Therefore,
+\begin{align*}
+\entropy(Y)
+&=-\frac{6}{10}\log_2\frac{6}{10}-\frac{4}{10}\log_2\frac{4}{10}\\
+&=0.970950594\approx 0.971.
+\end{align*}
+
+\subsection*{3(a) Information gain at the root}
+
+\paragraph{Outlook.}
+The Sunny branch has $(1\ \mathrm{Yes},3\ \mathrm{No})$, the Overcast branch
+has $(2\ \mathrm{Yes},0\ \mathrm{No})$, and the Rain branch has
+$(3\ \mathrm{Yes},1\ \mathrm{No})$.  Hence
+\begin{align*}
+\entropy(\mathrm{Sunny})&=-\tfrac14\log_2\tfrac14-	frac34\log_2\tfrac34
+=0.811278,\\
+\entropy(\mathrm{Overcast})&=0,\\
+\entropy(\mathrm{Rain})&=-\tfrac34\log_2\tfrac34-	frac14\log_2\tfrac14
+=0.811278,\\
+\IG(Y,\mathrm{Outlook})
+&=0.970951-\tfrac4{10}(0.811278)-\tfrac2{10}(0)-\tfrac4{10}(0.811278)\\
+&=\boxed{0.322}.
+\end{align*}
+
+\paragraph{Humidity.}
+The High branch has $(2\ \mathrm{Yes},3\ \mathrm{No})$, while the Normal branch
+has $(4\ \mathrm{Yes},1\ \mathrm{No})$.  Thus
+\begin{align*}
+\entropy(\mathrm{High})&=-\tfrac25\log_2\tfrac25-	frac35\log_2\tfrac35
+=0.970951,\\
+\entropy(\mathrm{Normal})&=-\tfrac45\log_2\tfrac45-	frac15\log_2\tfrac15
+=0.721928,\\
+\IG(Y,\mathrm{Humidity})
+&=0.970951-\tfrac5{10}(0.970951)-\tfrac5{10}(0.721928)\\
+&=\boxed{0.125}.
+\end{align*}
+
+\paragraph{Temperature.}
+The Hot branch has $(1\ \mathrm{Yes},2\ \mathrm{No})$ and the Mild branch has
+$(2\ \mathrm{Yes},1\ \mathrm{No})$, so both have entropy $0.918296$.  The Cool
+branch has $(3\ \mathrm{Yes},1\ \mathrm{No})$, so its entropy is $0.811278$.
+Therefore,
+\begin{align*}
+\IG(Y,\mathrm{Temperature})
+&=0.970951-\tfrac3{10}(0.918296)-\tfrac3{10}(0.918296)
+ -\tfrac4{10}(0.811278)\\
+&=\boxed{0.095}.
+\end{align*}
+Since $0.322>0.125>0.095$, the first splitting attribute is
+\(\boxed{\mathrm{Outlook}}\).
+
+\subsection*{3(b) Force Humidity as the first split}
+
+\subsubsection*{(i) Entropy in the two branches}
+The branch entropies, already computed from their label counts, are
+\[
+\boxed{\entropy(Y\mid \mathrm{Humidity=High})=0.971},
+\qquad
+\boxed{\entropy(Y\mid \mathrm{Humidity=Normal})=0.722}.
+\]
+
+\subsubsection*{(ii) Information gain for Humidity}
+The weighted post-split entropy is
+\[
+\tfrac5{10}(0.970951)+\tfrac5{10}(0.721928)=0.846439,
+\]
+so
+\[
+\boxed{\IG(Y,\mathrm{Humidity})=0.970951-0.846439=0.125}.
+\]
+
+\subsubsection*{(iii) Split each branch on Temperature}
+For the High-humidity branch, Temperature=Hot contains $(1\ \mathrm{Yes},2\ \mathrm{No})$
+and Temperature=Mild contains $(1\ \mathrm{Yes},1\ \mathrm{No})$.  Consequently,
+\begin{align*}
+\IG(\mathrm{High},\mathrm{Temperature})
+&=0.970951-\tfrac35(0.918296)-\tfrac25(1.000000)\\
+&=\boxed{0.020}.
+\end{align*}
+
+For the Normal-humidity branch, Temperature=Cool contains $(3\ \mathrm{Yes},1\ \mathrm{No})$
+and Temperature=Mild contains one Yes label.  The latter branch is pure, so its
+entropy is zero:
+\begin{align*}
+\IG(\mathrm{Normal},\mathrm{Temperature})
+&=0.721928-\tfrac45(0.811278)-\tfrac15(0)\\
+&=\boxed{0.073}.
+\end{align*}
+
+\subsection*{3(c) Two problems with decision trees}
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Overfitting.} If the tree keeps splitting until leaves are
+    nearly pure, it can memorize noise or rare training examples.  Its training
+    error may be near zero while its test error is large.  Limiting depth,
+    requiring a minimum leaf size, or pruning reduces this problem.
+    \item \textbf{Instability under small data changes.} Greedy splitting makes
+    an early choice that can change when one training point is added, removed,
+    or slightly perturbed; the changed root then changes the entire subtree.
+    Bagging or random forests reduce this variance by averaging many trees.
+\end{enumerate}
+
+\section{Regression}
+
+The training points are $(7,6)$, $(2,2)$, and $(4,3)$.  With
+$h_{\mathbf w}(x)=w_1x+w_0$, the sum-of-squared-errors objective is
+\[
+L(w_0,w_1)=(6-7w_1-w_0)^2+(2-2w_1-w_0)^2+(3-4w_1-w_0)^2.
+\]
+
+\subsection*{4(a) Least-squares weights}
+Set the two partial derivatives to zero.  Equivalently, the normal equations are
+\begin{align*}
+3w_0+13w_1&=11,\\
+13w_0+69w_1&=58,
+\end{align*}
+where
+\[
+\sum x_i=13,\quad \sum y_i=11,\quad
+\sum x_i^2=49+4+16=69,\quad
+\sum x_iy_i=42+4+12=58.
+\]
+The determinant is $3\cdot69-13^2=38>0$, so the quadratic objective has a
+unique minimizer.  Eliminating $w_0$ gives
+\[
+(207-169)w_1=174-143
+\quad\Longrightarrow\quad
+38w_1=31
+\quad\Longrightarrow\quad
+w_1=\frac{31}{38}=0.815789.
+\]
+Substitution into the first normal equation gives
+\[
+3w_0=11-13\left(\frac{31}{38}\right)=\frac{15}{38},
+\qquad
+w_0=\frac{5}{38}=0.131579.
+\]
+Thus
+\[
+\boxed{h(x)=\frac{31}{38}x+\frac{5}{38}}.
+\]
+
+\subsection*{4(b) Predictions for all five points}
+Using the same weights, the five predictions are
+\begin{align*}
+\widehat y_1=h(7)&=\frac{222}{38}=5.842105,\\
+\widehat y_2=h(2)&=\frac{67}{38}=1.763158,\\
+\widehat y_3=h(4)&=\frac{129}{38}=3.394737,\\
+\widehat y_4=h(3)&=\frac{98}{38}=2.578947,\\
+\widehat y_5=h(-1)&=-\frac{26}{38}=-0.684211.
+\end{align*}
+Therefore,
+\[
+\boxed{(\widehat y_1,\widehat y_2,\widehat y_3,\widehat y_4,\widehat y_5)
+=(5.842105,1.763158,3.394737,2.578947,-0.684211)}.
+\]
+
+\subsection*{4(c) Overall loss on all five points}
+The residuals $y_i-\widehat y_i$ are
+\[
+\frac{3}{19},\quad \frac{9}{38},\quad -\frac{15}{38},\quad
+-\frac{11}{19},\quad -\frac{6}{19}.
+\]
+Therefore,
+\begin{align*}
+L_{1:5}
+&=\left(\frac3{19}\right)^2+\left(\frac9{38}\right)^2
+ +\left(\frac{15}{38}\right)^2+\left(\frac{11}{19}\right)^2
+ +\left(\frac6{19}\right)^2\\
+&=\frac{485}{722}=0.671745.
+\end{align*}
+Thus the requested overall loss is \(\boxed{0.671745}\).
+
+\subsection*{4(d) $R^2$ statistic}
+For all five observed outputs,
+\[
+\bar y=\frac{6+2+3+2-1}{5}=\frac{12}{5}=2.4,
+\]
+and the total sum of squares is
+\begin{align*}
+\mathrm{SST}&=\sum_{i=1}^{5}(y_i-\bar y)^2\\
+&=(6-2.4)^2+(2-2.4)^2+(3-2.4)^2
+ +(2-2.4)^2+(-1-2.4)^2\\
+&=25.2.
+\end{align*}
+Using $\mathrm{SSE}=0.671745$ from part (c),
+\begin{align*}
+\Rtwo&=1-\frac{\mathrm{SSE}}{\mathrm{SST}}
+=1-\frac{0.671745}{25.2}\\
+&=\boxed{0.973343}\approx 97.3\%.
+\end{align*}
+On this five-point evaluation set, the model explains approximately $97.3\%$
+of the variation in the outputs.  This is a strong fit for this small dataset;
+it should not be interpreted as a guarantee of the same performance on a larger
+or different population.
+
+\end{document}

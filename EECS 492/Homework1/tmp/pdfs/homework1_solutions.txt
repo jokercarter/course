@@ -1,0 +1,389 @@
+                          EECS 492 – Homework 1
+                                       Written Solutions
+
+
+
+
+                                            Fall 2026
+
+
+1     Designing Agents
+
+1(a) PEAS description
+
+The task environment contains a repeated sequence of tic-tac-toe games. At the end of a game, the
+board is cleared (or a fresh sheet is provided) and the next game begins. A PEAS description is
+therefore:
+
+
+    Component        Specification
+
+    Performance      Correctly recognize the board geometry, the symbols X and O, and empty
+    measure          cells; make only legal moves in empty cells; choose a move that is optimal
+                     for the agent’s objective; correctly detect a win, loss, or tie; and reset and
+                     repeat the procedure reliably over arbitrarily many games. Secondary costs
+                     include drawing errors, sensing errors, unnecessary pen motion, and time.
+
+    Environment      A physical sheet of paper containing a 3 × 3 grid, the current markings,
+                     the pen and the board location, an opposing human or robot, and the
+                     sequence of past game outcomes. Between games the board is reset.
+
+    Actuators        A pen-moving mechanism, a pen-lowering/raising or contact mechanism,
+                     and a marker-drawing action that selects one of the nine cells. The agent
+                     may also signal the result of a game and request or perform a reset.
+
+    Sensors          A camera or other visual sensor for locating the grid, classifying X versus
+                     O, and detecting empty cells; position/contact feedback for the pen; and a
+                     state-change detector for recognizing the opponent’s move and the
+                     terminal board state.
+
+
+Assumptions. The paper remains within the sensing workspace, the grid is not intentionally
+destroyed, and illumination and handwriting vary within the sensor’s operating range. The opponent
+is allowed to be either a person or another agent and may choose any legal move.
+
+
+1(b) Environment characteristics
+
+The classification below is for the physical robot described in the question, not for an idealized
+symbolic program. The distinction matters because sensing and pen motion introduce uncertainty
+even though the game rules themselves are simple.
+
+
+                                                 1
+EECS 492 – Homework 1                                                                            Written Solutions
+
+
+ Dimension                   Classification              Justification
+ Observability               Partially observable        The true board state is not directly available as symbols.
+                                                         The agent must infer it from images, and glare, occlusion,
+                                                         ambiguous handwriting, or an imperfect classifier can hide
+                                                         whether a cell is empty or which marker it contains.
+ Number of agents            Multi-agent                 The opponent selects actions that change the board and
+                                                         therefore changes the agent’s future choices.
+ Transition model            Nondeterministic            The opponent’s action is not controlled by the agent, and
+                                                         sensing or drawing can fail. If all perception and actuation
+                                                         were assumed perfect and the opponent’s move were
+                                                         supplied as an action, the symbolic game transition would
+                                                         instead be deterministic.
+ Temporal dependence         Sequential                  Each move changes the legal action set and can determine
+                                                         later wins, losses, or ties. The complete task is a sequence
+                                                         of such games, with a reset between episodes.
+ Change while deliberating   Dynamic                     The opponent or the physical setup may change while the
+                                                         robot is sensing or planning. If the opponent is required to
+                                                         wait and the sheet is fixed during the robot’s turn, the
+                                                         game is only semi-dynamic during that turn; the physical
+                                                         specification here permits changes, so “dynamic” is the
+                                                         conservative label.
+ State and actions           Discrete at the game        There are finitely many cells, marker values, legal moves,
+                             level                       and terminal results. Pen trajectories and camera
+                                                         measurements are continuous physical quantities, but they
+                                                         are abstracted into discrete game states and actions.
+ Model knowledge             Known at the rule           The agent can be programmed with the tic-tac-toe rules
+                             level; uncertain at         and winning condition. It may not know the exact camera
+                             the physical level          noise, pen-placement error, lighting, or opponent policy
+                                                         before calibration and experience.
+
+
+
+2    K-Nearest Neighbors
+
+The query point is
+                                                   q = (8, 0, 3).
+For Trial m, only the first m coordinates are used, so
+                                                               1/2
+                                                  m
+                                                  X
+                                   dm (q, xi ) =  (qj − xij )2  .
+                                                        j=1
+
+
+
+2(a) Distances
+
+The individual calculations are:
+
+
+
+
+                                                      2 of 7
+EECS 492 – Homework 1                                                              Written Solutions
+
+
+
+
+                                 Trial 1: d1 (q, x1 ) = |8 − 5| = 3,
+                                          d1 (q, x2 ) = |8 − 7| = 1,
+                                          d1 (q, x3 ) = |8 − 0| = 8,
+                                          d1 (q, x4 ) = |8 − 2| = 6,
+                                          d1 (q, x5 ) = |8 − 9| = 1,
+                                          d1 (q, x6 ) = |8 − 3| = 5.
+
+For Trial 2, the first two coordinates give
+                                      p                     √
+                         d2 (q, x1 ) = (8 − 5)2 + (0 − 2)2 = 13 = 3.606,
+                                      p                     √
+                         d2 (q, x2 ) = (8 − 7)2 + (0 − 6)2 = 37 = 6.083,
+                                      p                     √
+                         d2 (q, x3 ) = (8 − 0)2 + (0 − 6)2 = 100 = 10.000,
+                                      p                     √
+                         d2 (q, x4 ) = (8 − 2)2 + (0 − 7)2 = 85 = 9.220,
+                                      p                     √
+                         d2 (q, x5 ) = (8 − 9)2 + (0 − 2)2 = 5 = 2.236,
+                                      p                     √
+                         d2 (q, x6 ) = (8 − 3)2 + (0 − 5)2 = 50 = 7.071.
+
+For Trial 3, all three coordinates give
+                                 p                                √
+                    d3 (q, x1 ) = (8 − 5)2 + (0 − 2)2 + (3 − 8)2 = 38 = 6.164,
+                                 p                                √
+                    d3 (q, x2 ) = (8 − 7)2 + (0 − 6)2 + (3 − 1)2 = 41 = 6.403,
+                                 p                                √
+                    d3 (q, x3 ) = (8 − 0)2 + (0 − 6)2 + (3 − 0)2 = 109 = 10.440,
+                                 p                                √
+                    d3 (q, x4 ) = (8 − 2)2 + (0 − 7)2 + (3 − 4)2 = 86 = 9.274,
+                                 p                                √
+                    d3 (q, x5 ) = (8 − 9)2 + (0 − 2)2 + (3 − 4)2 = 6 = 2.449,
+                                 p                                √
+                    d3 (q, x6 ) = (8 − 3)2 + (0 − 5)2 + (3 − 8)2 = 75 = 8.660.
+
+Thus the requested table is:
+
+
+                                Point   Trial 1    Trial 2   Trial 3
+
+                                  x1     3.000      3.606     6.164
+                                  x2     1.000      6.083     6.403
+                                  x3     8.000     10.000    10.440
+                                  x4     6.000      9.220     9.274
+                                  x5     1.000      2.236     2.449
+                                  x6     5.000      7.071     8.660
+
+
+2(b) k = 3 classification
+
+The training labels are y1 = A, y2 = B, y3 = A, y4 = B, y5 = A, and y6 = B.
+
+                                               3 of 7
+EECS 492 – Homework 1                                                                       Written Solutions
+
+
+     Trial 1. The sorted distances are 1 for x2 , 1 for x5 , and 3 for x1 (the first two are tied). The
+      three labels are B, A, A, so the majority is A. The nearest-neighbor set is {x2 , x5 , x1 }, up to
+      the order of the tied points.
+     Trial 2. The three smallest distances are for x5 , x1 , x2 , with labels A, A, B. The prediction is
+       A.
+     Trial 3. The three smallest distances are for x5 , x1 , x2 , with labels A, A, B. The prediction is
+       A.
+Therefore, all three trials classify the query as A.
+
+
+3    Decision Tree
+
+For a label set S, use
+                            X                                               X          |Sv |
+            H(S) = −                  pc log2 pc ,   IG(S, A) = H(S) −                       H(Sv ).
+                                                                                        |S|
+                         c∈{Yes,No}                                      v∈Values(A)
+
+The data contain 6 “Yes” labels and 4 “No” labels. Therefore,
+                                          6       6   4        4
+                               H(Y ) = − log2       −    log2
+                                         10      10 10        10
+                                     = 0.970950594 ≈ 0.971.
+
+
+3(a) Information gain at the root
+
+Outlook. The Sunny branch has (1 Yes, 3 No), the Overcast branch has (2 Yes, 0 No), and the
+Rain branch has (3 Yes, 1 No). Hence
+                      H(Sunny) = − 14 log2 14 − f rac34 log2 34 = 0.811278,
+                    H(Overcast) = 0,
+                         H(Rain) = − 34 log2 34 − f rac14 log2 14 = 0.811278,
+                                             4               2        4
+                 IG(Y, Outlook) = 0.970951 − 10 (0.811278) − 10 (0) − 10 (0.811278)
+                                      = 0.322 .
+
+
+Humidity. The High branch has (2 Yes, 3 No), while the Normal branch has (4 Yes, 1 No). Thus
+                              H(High) = − 52 log2 25 − f rac35 log2 35 = 0.970951,
+                            H(Normal) = − 54 log2 45 − f rac15 log2 15 = 0.721928,
+                                                  5                5
+                     IG(Y, Humidity) = 0.970951 − 10 (0.970951) − 10 (0.721928)
+                                            = 0.125 .
+
+
+Temperature. The Hot branch has (1 Yes, 2 No) and the Mild branch has (2 Yes, 1 No), so both
+have entropy 0.918296. The Cool branch has (3 Yes, 1 No), so its entropy is 0.811278. Therefore,
+                                           3                3              4
+           IG(Y, Temperature) = 0.970951 − 10 (0.918296) − 10 (0.918296) − 10 (0.811278)
+                                  = 0.095 .
+Since 0.322 > 0.125 > 0.095, the first splitting attribute is Outlook .
+
+                                                     4 of 7
+EECS 492 – Homework 1                                                               Written Solutions
+
+
+3(b) Force Humidity as the first split
+
+(i) Entropy in the two branches
+
+The branch entropies, already computed from their label counts, are
+
+            H(Y | Humidity = High) = 0.971 ,           H(Y | Humidity = Normal) = 0.722 .
+
+
+(ii) Information gain for Humidity
+
+The weighted post-split entropy is
+                               5               5
+                               10 (0.970951) + 10 (0.721928) = 0.846439,
+
+so
+                           IG(Y, Humidity) = 0.970951 − 0.846439 = 0.125 .
+
+
+(iii) Split each branch on Temperature
+
+For the High-humidity branch, Temperature=Hot contains (1 Yes, 2 No) and Temperature=Mild
+contains (1 Yes, 1 No). Consequently,
+
+                   IG(High, Temperature) = 0.970951 − 35 (0.918296) − 25 (1.000000)
+                                           = 0.020 .
+
+For the Normal-humidity branch, Temperature=Cool contains (3 Yes, 1 No) and Temperature=Mild
+contains one Yes label. The latter branch is pure, so its entropy is zero:
+
+                     IG(Normal, Temperature) = 0.721928 − 54 (0.811278) − 15 (0)
+                                                = 0.073 .
+
+
+3(c) Two problems with decision trees
+     1. Overfitting. If the tree keeps splitting until leaves are nearly pure, it can memorize noise
+        or rare training examples. Its training error may be near zero while its test error is large.
+        Limiting depth, requiring a minimum leaf size, or pruning reduces this problem.
+     2. Instability under small data changes. Greedy splitting makes an early choice that can
+        change when one training point is added, removed, or slightly perturbed; the changed root
+        then changes the entire subtree. Bagging or random forests reduce this variance by averaging
+        many trees.
+
+
+4      Regression
+
+The training points are (7, 6), (2, 2), and (4, 3). With hw (x) = w1 x + w0 , the sum-of-squared-errors
+objective is
+
+                 L(w0 , w1 ) = (6 − 7w1 − w0 )2 + (2 − 2w1 − w0 )2 + (3 − 4w1 − w0 )2 .
+
+                                                 5 of 7
+EECS 492 – Homework 1                                                                                 Written Solutions
+
+
+4(a) Least-squares weights
+
+Set the two partial derivatives to zero. Equivalently, the normal equations are
+
+                                                 3w0 + 13w1 = 11,
+                                                13w0 + 69w1 = 58,
+
+where
+        X              X                  X                                       X
+            xi = 13,         yi = 11,          x2i = 49 + 4 + 16 = 69,                  xi yi = 42 + 4 + 12 = 58.
+
+The determinant is 3 · 69 − 132 = 38 > 0, so the quadratic objective has a unique minimizer.
+Eliminating w0 gives
+                                                                                               31
+             (207 − 169)w1 = 174 − 143          =⇒        38w1 = 31          =⇒         w1 =      = 0.815789.
+                                                                                               38
+Substitution into the first normal equation gives
+                                       
+                                       31      15                            5
+                       3w0 = 11 − 13        = ,                       w0 =      = 0.131579.
+                                       38      38                            38
+
+Thus
+                                                           31    5
+                                                h(x) =        x+    .
+                                                           38    38
+
+
+4(b) Predictions for all five points
+
+Using the same weights, the five predictions are
+                                                        222
+                                          yb1 = h(7) =       = 5.842105,
+                                                         38
+                                                        67
+                                           yb2 = h(2) =     = 1.763158,
+                                                        38
+                                                        129
+                                           yb3 = h(4) =      = 3.394737,
+                                                         38
+                                                        98
+                                           yb4 = h(3) =     = 2.578947,
+                                                        38
+                                                          26
+                                        yb5 = h(−1) = − = −0.684211.
+                                                          38
+Therefore,
+
+                y1 , yb2 , yb3 , yb4 , yb5 ) = (5.842105, 1.763158, 3.394737, 2.578947, −0.684211) .
+               (b
+
+
+4(c) Overall loss on all five points
+
+The residuals yi − ybi are
+                                        3       9         15          11         6
+                                           ,      ,   −      ,    −      ,   −      .
+                                        19     38         38          19         19
+
+
+                                                         6 of 7
+EECS 492 – Homework 1                                                             Written Solutions
+
+
+Therefore,
+
+                               3 2
+                                     2  2  2  2
+                                        9      15   11   6
+                      L1:5 =        +        +    +    +
+                              19        38     38   19   19
+                             485
+                           =     = 0.671745.
+                             722
+
+Thus the requested overall loss is 0.671745 .
+
+
+4(d) R2 statistic
+
+For all five observed outputs,
+                                         6+2+3+2−1   12
+                                  ȳ =             =    = 2.4,
+                                             5       5
+and the total sum of squares is
+                     5
+                     X
+               SST =   (yi − ȳ)2
+                      i=1
+                    = (6 − 2.4)2 + (2 − 2.4)2 + (3 − 2.4)2 + (2 − 2.4)2 + (−1 − 2.4)2
+                    = 25.2.
+
+Using SSE = 0.671745 from part (c),
+
+                                               SSE       0.671745
+                                   R2 = 1 −        =1−
+                                              SST          25.2
+                                         = 0.973343 ≈ 97.3%.
+
+On this five-point evaluation set, the model explains approximately 97.3% of the variation in the
+outputs. This is a strong fit for this small dataset; it should not be interpreted as a guarantee of
+the same performance on a larger or different population.
+
+
+
+
+                                                 7 of 7
+

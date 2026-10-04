@@ -1,0 +1,154 @@
+\documentclass[11pt]{article}
+
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.65em}
+\newcommand{\C}{\mathbb{C}}
+
+\begin{document}
+
+\section*{Problem 1}
+
+Let
+\[
+J_m(\lambda)=
+\begin{pmatrix}
+\lambda&1&0&\cdots&0\\
+0&\lambda&1&\ddots&\vdots\\
+\vdots&\ddots&\ddots&\ddots&0\\
+0&\cdots&0&\lambda&1\\
+0&\cdots&\cdots&0&\lambda
+\end{pmatrix},
+\qquad \lambda\in\C.
+\]
+We compute $J_m(\lambda)^n$ for every $n\geq 0$.
+
+Define
+\[
+N:=J_m(\lambda)-\lambda I_m
+ =\sum_{i=1}^{m-1}E_{i,i+1},
+\]
+where $E_{ij}$ denotes the matrix having a $1$ in position $(i,j)$ and
+zeros elsewhere. The matrix $N$ shifts one step along the first
+superdiagonal. More precisely, for $0\leq k\leq m-1$,
+\[
+N^k=\sum_{i=1}^{m-k}E_{i,i+k}.
+\]
+This identity follows by induction. It is clear for $k=0$, since
+$N^0=I_m$. If it holds for $k<m-1$, then
+\[
+N^{k+1}=N^kN
+ =\left(\sum_{i=1}^{m-k}E_{i,i+k}\right)
+   \left(\sum_{r=1}^{m-1}E_{r,r+1}\right)
+ =\sum_{i=1}^{m-k-1}E_{i,i+k+1},
+\]
+because $E_{ab}E_{cd}=\delta_{bc}E_{ad}$. In particular, $N^m=0$.
+
+Since $\lambda I_m$ commutes with $N$, the binomial theorem for commuting
+matrices gives
+\[
+\begin{aligned}
+J_m(\lambda)^n
+  &=(\lambda I_m+N)^n\\
+  &=\sum_{k=0}^{n}\binom{n}{k}(\lambda I_m)^{n-k}N^k\\
+  &=\sum_{k=0}^{\min\{n,m-1\}}
+       \binom{n}{k}\lambda^{\,n-k}N^k.
+\end{aligned}
+\]
+The last equality uses $N^k=0$ for $k\geq m$. Therefore, entrywise,
+\[
+\boxed{
+\bigl(J_m(\lambda)^n\bigr)_{ij}
+ =\begin{cases}
+ \displaystyle \binom{n}{j-i}\lambda^{\,n-(j-i)},
+     &0\leq j-i\leq\min\{n,m-1\},\\[0.8em]
+ 0, &\text{otherwise.}
+ \end{cases}}
+\]
+Indeed, when $j-i=k$ the matrix $N^k$ has a $1$ in position $(i,j)$,
+whereas all other powers $N^\ell$ have a zero there. Equivalently, if
+\[
+b_k:=
+\begin{cases}
+\displaystyle\binom{n}{k}\lambda^{\,n-k},&0\leq k\leq n,\\
+0,&k>n,
+\end{cases}
+\]
+then $J_m(\lambda)^n$ is the upper-triangular Toeplitz matrix
+\[
+\boxed{
+J_m(\lambda)^n=
+\begin{pmatrix}
+ b_0&b_1&b_2&\cdots&b_{m-1}\\
+ 0&b_0&b_1&\ddots&\vdots\\
+ \vdots&\ddots&\ddots&\ddots&b_2\\
+ 0&\cdots&0&b_0&b_1\\
+ 0&\cdots&\cdots&0&b_0
+\end{pmatrix}.}
+\]
+This also covers $n=0$ (when the matrix is $I_m$) and $\lambda=0$ without
+requiring any negative powers of $\lambda$.
+
+\section*{Problem 2}
+
+Let $A=(a_{ij})_{i,j=1}^n$ be given by
+\[
+a_{ij}=\begin{cases}
+(-1)^{|i-j|},&i\neq j,\\
+2,&i=j.
+\end{cases}
+\]
+Introduce the column vector
+\[
+s:=\begin{pmatrix}1&-1&1&\cdots&(-1)^{n-1}\end{pmatrix}^{\!T},
+\qquad s_i=(-1)^{i-1}.
+\]
+For any $i,j$, the integers $|i-j|$ and $i-j$ have the same parity, and
+$(i-j)-(i+j)=-2j$ is even. Consequently,
+\[
+(-1)^{|i-j|}=(-1)^{i-j}=(-1)^{i+j}=s_i s_j.
+\]
+Thus $ss^T$ has the required off-diagonal entries and has diagonal entries
+$s_i^2=1$. It follows that
+\[
+A=I_n+ss^T.
+\]
+
+We now determine the eigenvalues of this rank-one perturbation. Let
+\[
+W:=\{x\in\C^n:s^Tx=0\}.
+\]
+For every $x\in W$,
+\[
+Ax=(I_n+ss^T)x=x+s(s^Tx)=x,
+\]
+so $1$ is an eigenvalue on $W$. Since $s^Ts=\sum_{i=1}^n s_i^2=n$,
+\[
+As=(I_n+ss^T)s=s+s(s^Ts)=(n+1)s,
+\]
+so $n+1$ is an eigenvalue with eigenvector $s$.
+
+It remains to verify that these account for all $n$ dimensions. Because
+$s^Ts=n\neq0$, every $x\in\C^n$ has the decomposition
+\[
+x=\left(x-\frac{s^Tx}{n}s\right)+\frac{s^Tx}{n}s,
+\]
+where the first summand lies in $W$. Also, $W\cap\operatorname{span}\{s\}
+=\{0\}$: if $\alpha s\in W$, then $0=s^T(\alpha s)=\alpha n$, hence
+$\alpha=0$. Therefore
+\[
+\C^n=W\oplus\operatorname{span}\{s\},
+\qquad \dim W=n-1.
+\]
+Relative to a basis adapted to this direct sum, the matrix of $A$ is
+$\operatorname{diag}(1,\ldots,1,n+1)$, with $n-1$ copies of $1$.
+Hence
+\[
+\boxed{\det A=1^{n-1}(n+1)=n+1.}
+\]
+
+\end{document}
