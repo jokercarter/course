@@ -7,8 +7,6 @@
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.65em}
-\newcommand{\C}{\mathbb{C}}
-
 \begin{document}
 
 \section*{Problem 1}
@@ -22,133 +20,93 @@ J_m(\lambda)=
 \vdots&\ddots&\ddots&\ddots&0\\
 0&\cdots&0&\lambda&1\\
 0&\cdots&\cdots&0&\lambda
-\end{pmatrix},
-\qquad \lambda\in\C.
+\end{pmatrix}.
 \]
-We compute $J_m(\lambda)^n$ for every $n\geq 0$.
+Write $J_m(\lambda)^n=(c^{(n)}_{ij})$. Since the only nonzero entries
+in column $j$ of $J_m(\lambda)$ are $\lambda$ in row $j$ and $1$ in
+row $j-1$ (when $j>1$), matrix multiplication gives
+\[
+c^{(n+1)}_{ij}=\lambda c^{(n)}_{ij}+c^{(n)}_{i,j-1},
+\]
+where an index outside $1,\ldots,m$ contributes $0$.
 
-Define
+We claim that, for every $n\geq0$,
 \[
-N:=J_m(\lambda)-\lambda I_m
- =\sum_{i=1}^{m-1}E_{i,i+1},
+c^{(n)}_{ij}=\begin{cases}
+\displaystyle\binom{n}{j-i}\lambda^{\,n-(j-i)},
+&0\leq j-i\leq\min\{n,m-1\},\\[0.7em]
+0,&\text{otherwise.}
+\end{cases}
 \]
-where $E_{ij}$ denotes the matrix having a $1$ in position $(i,j)$ and
-zeros elsewhere. The matrix $N$ shifts one step along the first
-superdiagonal. More precisely, for $0\leq k\leq m-1$,
+For $n=0$, this is the identity matrix. Assume it holds for $n$. If
+$k=j-i$ satisfies $1\leq k\leq n$, then the recurrence and Pascal's
+identity give
 \[
-N^k=\sum_{i=1}^{m-k}E_{i,i+k}.
+c^{(n+1)}_{i,i+k}
+=\lambda\binom{n}{k}\lambda^{n-k}
+ +\binom{n}{k-1}\lambda^{n-k+1}
+=\binom{n+1}{k}\lambda^{n+1-k}.
 \]
-This identity follows by induction. It is clear for $k=0$, since
-$N^0=I_m$. If it holds for $k<m-1$, then
-\[
-N^{k+1}=N^kN
- =\left(\sum_{i=1}^{m-k}E_{i,i+k}\right)
-   \left(\sum_{r=1}^{m-1}E_{r,r+1}\right)
- =\sum_{i=1}^{m-k-1}E_{i,i+k+1},
-\]
-because $E_{ab}E_{cd}=\delta_{bc}E_{ad}$. In particular, $N^m=0$.
+For $k=0$ the recurrence gives $\lambda^{n+1}$; for $k=n+1$ the
+second term gives $1$; and for $k>n+1$ both terms are zero. Thus the
+claim holds by induction.
 
-Since $\lambda I_m$ commutes with $N$, the binomial theorem for commuting
-matrices gives
-\[
-\begin{aligned}
-J_m(\lambda)^n
-  &=(\lambda I_m+N)^n\\
-  &=\sum_{k=0}^{n}\binom{n}{k}(\lambda I_m)^{n-k}N^k\\
-  &=\sum_{k=0}^{\min\{n,m-1\}}
-       \binom{n}{k}\lambda^{\,n-k}N^k.
-\end{aligned}
-\]
-The last equality uses $N^k=0$ for $k\geq m$. Therefore, entrywise,
+Therefore
 \[
 \boxed{
 \bigl(J_m(\lambda)^n\bigr)_{ij}
- =\begin{cases}
- \displaystyle \binom{n}{j-i}\lambda^{\,n-(j-i)},
-     &0\leq j-i\leq\min\{n,m-1\},\\[0.8em]
- 0, &\text{otherwise.}
- \end{cases}}
+=\begin{cases}
+\displaystyle\binom{n}{j-i}\lambda^{\,n-(j-i)},
+&0\leq j-i\leq\min\{n,m-1\},\\[0.7em]
+0,&\text{otherwise.}
+\end{cases}}
 \]
-Indeed, when $j-i=k$ the matrix $N^k$ has a $1$ in position $(i,j)$,
-whereas all other powers $N^\ell$ have a zero there. Equivalently, if
-\[
-b_k:=
-\begin{cases}
-\displaystyle\binom{n}{k}\lambda^{\,n-k},&0\leq k\leq n,\\
-0,&k>n,
-\end{cases}
-\]
-then $J_m(\lambda)^n$ is the upper-triangular Toeplitz matrix
+If $b_k=\binom{n}{k}\lambda^{n-k}$ for $0\leq k\leq n$ and $b_k=0$
+for $k>n$, this is
 \[
 \boxed{
 J_m(\lambda)^n=
 \begin{pmatrix}
- b_0&b_1&b_2&\cdots&b_{m-1}\\
- 0&b_0&b_1&\ddots&\vdots\\
- \vdots&\ddots&\ddots&\ddots&b_2\\
- 0&\cdots&0&b_0&b_1\\
- 0&\cdots&\cdots&0&b_0
+b_0&b_1&b_2&\cdots&b_{m-1}\\
+0&b_0&b_1&\ddots&\vdots\\
+\vdots&\ddots&\ddots&\ddots&b_2\\
+0&\cdots&0&b_0&b_1\\
+0&\cdots&\cdots&0&b_0
 \end{pmatrix}.}
 \]
-This also covers $n=0$ (when the matrix is $I_m$) and $\lambda=0$ without
-requiring any negative powers of $\lambda$.
 
 \section*{Problem 2}
 
-Let $A=(a_{ij})_{i,j=1}^n$ be given by
-\[
-a_{ij}=\begin{cases}
-(-1)^{|i-j|},&i\neq j,\\
-2,&i=j.
-\end{cases}
-\]
-Introduce the column vector
-\[
-s:=\begin{pmatrix}1&-1&1&\cdots&(-1)^{n-1}\end{pmatrix}^{\!T},
-\qquad s_i=(-1)^{i-1}.
-\]
-For any $i,j$, the integers $|i-j|$ and $i-j$ have the same parity, and
-$(i-j)-(i+j)=-2j$ is even. Consequently,
-\[
-(-1)^{|i-j|}=(-1)^{i-j}=(-1)^{i+j}=s_i s_j.
-\]
-Thus $ss^T$ has the required off-diagonal entries and has diagonal entries
-$s_i^2=1$. It follows that
-\[
-A=I_n+ss^T.
-\]
+Let $A=(a_{ij})_{i,j=1}^n$, where $a_{ii}=2$ and
+$a_{ij}=(-1)^{|i-j|}$ for $i\ne j$. Multiply row $i$ and column $i$
+by $(-1)^{i-1}$ for every $i$. Equivalently, first multiply each row
+by these signs and then multiply each column by the same signs. The
+determinant is unchanged because the two products of signs square to
+$1$.
 
-We now determine the eigenvalues of this rank-one perturbation. Let
+Call the resulting matrix $B$. Its diagonal entries are $2$. For
+$i\ne j$,
 \[
-W:=\{x\in\C^n:s^Tx=0\}.
+B_{ij}=(-1)^{i-1}(-1)^{|i-j|}(-1)^{j-1}=1,
 \]
-For every $x\in W$,
-\[
-Ax=(I_n+ss^T)x=x+s(s^Tx)=x,
-\]
-so $1$ is an eigenvalue on $W$. Since $s^Ts=\sum_{i=1}^n s_i^2=n$,
-\[
-As=(I_n+ss^T)s=s+s(s^Ts)=(n+1)s,
-\]
-so $n+1$ is an eigenvalue with eigenvector $s$.
+because $|i-j|$, $i-j$, and $i+j$ have the same parity. Thus $B$ has
+2 on the diagonal and 1 everywhere else.
 
-It remains to verify that these account for all $n$ dimensions. Because
-$s^Ts=n\neq0$, every $x\in\C^n$ has the decomposition
+For $i=2,\ldots,n$, replace row $i$ by row $i$ minus row $1$. The
+first row remains $(2,1,\ldots,1)$, and each later row becomes
 \[
-x=\left(x-\frac{s^Tx}{n}s\right)+\frac{s^Tx}{n}s,
+(-1,0,\ldots,0,1,0,\ldots,0),
 \]
-where the first summand lies in $W$. Also, $W\cap\operatorname{span}\{s\}
-=\{0\}$: if $\alpha s\in W$, then $0=s^T(\alpha s)=\alpha n$, hence
-$\alpha=0$. Therefore
+with the $1$ in column $i$. Now replace column $1$ by the sum of all
+columns. The resulting matrix is upper triangular: its first diagonal
+entry is
 \[
-\C^n=W\oplus\operatorname{span}\{s\},
-\qquad \dim W=n-1.
+2-(n-1)(-1)=n+1,
 \]
-Relative to a basis adapted to this direct sum, the matrix of $A$ is
-$\operatorname{diag}(1,\ldots,1,n+1)$, with $n-1$ copies of $1$.
-Hence
+and every other diagonal entry is $1$. These row and column operations
+preserve the determinant, so
 \[
-\boxed{\det A=1^{n-1}(n+1)=n+1.}
+\boxed{\det A=\det B=(n+1)\cdot1^{n-1}=n+1.}
 \]
 
 \end{document}
