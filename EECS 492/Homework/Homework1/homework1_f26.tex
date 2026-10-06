@@ -1,0 +1,409 @@
+\documentclass{homework}
+\usepackage[shortlabels]{enumitem}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{forest}
+\usepackage{bold-extra}
+\usepackage{algorithm2e}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{dirtytalk}
+\usepackage[linewidth=1pt]{mdframed}
+
+\newmdenv[linecolor=black, skipabove=10pt, linewidth=1pt, frametitle={\\Answer:}]{answer}
+
+\title{EECS 492 - Homework 1 (Fall 2026)}
+\author{Due: Tuesday, October 5, 2026 at 23:59}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Logistics}
+\subsection*{Submission Guidelines}
+You must work alone for the conceptual problems, though you may discuss ideas and high-level concepts with classmates. You may optionally work with a partner on the coding sections, though you can work alone if you want. 
+
+The due date for this assignment is \textbf{Tuesday, October 5, 2026 at 23:59}. The submission is tracked using Gradescope. The written section and programming section are graded and penalized separately. Also note that any change you make to the homework already submitted on Gradescope counts as a resubmission. If you make any changes to the assignment after the due date has passed you will be assigned a late penalty based on the number of days that have passed. For example, if you edit an assignment on October 6 and it was due on October 3 you will be assigned a 30\% penalty (10\% per day). This is non-negotiable.
+
+You must submit the following files to Gradescope (note that there are two separate Gradescope submissions):
+\begin{enumerate}
+    \item \textbf{A (legible) PDF containing the solutions to the written section}. You can write your solutions by hand, use a tablet, or typeset your solutions in \LaTeX. We only ask that you make it easy to read and not too verbose so that graders don't struggle to understand your writing. You must submit the written section to the Gradescope individually.
+    \item \textbf{The completed \texttt{dt.py}, \texttt{hw1\_part1.ipynb}, and \texttt{backprop.py} files to the programming section}. If you work with a partner, you must put both people's names on the Gradescope submission.
+\end{enumerate}
+\subsection*{Late Day Tokens}
+To accommodate for coinciding deadlines you may have from other courses, or personal unforeseen events such as sickness, each person has 5 late-day tokens for the whole semester (a maximum of 3 can be used for a particular homework). Each token provides an automatic extension of 1 calendar day---no questions asked.
+\begin{enumerate}
+    \item Each late day token covers the whole homework (both written part and programming part) for extension of 1 calendar day. For example, if you submitted written part 1 day late and programming part 2 days late. Then, if you use 1 late day token, you don't have any penalty on the written part, but will have 10\% penalty on the programming part.
+    \item Each homework has a Gradescope submission for the late day token, in addition to the written part and programming part.
+    \item Late days are rounded up to the nearest integer. For example, a submission that is 4 hours late will count as one day late.
+    \item Extreme circumstances, like medical emergencies, etc.: In such cases, additional, no-penalty extensions will be granted. Contact your section faculty instructor with some written documentation (like doctor's note). 
+    \item Emails requesting exceptions for other reasons will be ignored with no reply.
+    \item Homework turned in after three days will not be accepted.
+
+\end{enumerate}
+\subsection*{Grading Policy}
+You have one week to submit a regrade request once the grades for your homework are out. We will provide solutions, along with the exact grading rubric used. 
+\subsection*{Collaboration}
+Collaborating with people is encouraged, but plagiarism is strictly prohibited. As mentioned in \textbf{Submission Guidelines}, you must work alone for the conceptual problems, though you may discuss ideas and high-level
+concepts with classmates. You may optionally work with a partner on the coding sections, though you can work alone if you want.
+\subsection*{Generative AI}
+Learning how to use AI functions such as ChatGPT is important for all of us.  Used properly, ChatGPT can enhance our work; used improperly, it can border on plagiarism. You are allowed to use ChatGPT or similar only for conceptual questions, and \textbf{it is strictly forbidden for programming}. If you have used ChatGPT on anything you submit for EECS 492, please include an explanation as to:
+\begin{itemize}[noitemsep]
+    \item State which model you used
+    \item Include the prompt(s) that you gave the model 
+    \item Explain your reasoning as to why you agree (or disagree) with the response
+    \item Mention any incorrect responses or erroneous behavior that you may have seen
+\end{itemize}
+\newpage
+\section{Written [50 Points]}
+\subsection{Designing Agents [10 Points]} 
+Tic-tac-toe is a game for two players who take turns marking the spaces in a three-by-three grid with X or O. The game's objective is to be the first in placing three of their markers in a horizontal, vertical, or diagonal row (see Figure \ref{fig:ttt}).
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{Homework 1/images/tic-tac-toe.png}
+    \caption{A game of Tic-Tac-Toe where the O player has won, as it has three markers in a diagonal row.}
+    \label{fig:ttt}
+\end{figure}
+
+You are now tasked with developing an AI algorithm for a tic-tac-toe agent. The agent is a robot that can play against another agent (human or robot) on a piece of paper using a pen. The agent must be capable of:
+\begin{itemize}[noitemsep]
+    \item detecting whether a marker is a X or O
+    \item drawing a marker in one of the nine grids
+    \item detecting the empty grids and markers already present on the paper
+    \item using this information to determine if it has won, lost, or tied the game
+\end{itemize}
+Note that the agent is not just playing one time, but rather, is a robot that is supposed to be able to play multiple games as many times as needed.
+Now, answer the following questions - note that some of these cases might be ambiguous, so justify your answers and explicitly state any assumptions
+\begin{enumerate}[(a)]
+    \item {[5 Points]} Create the PEAS description for the task environment, where the task environment includes all the games the agent plays. 
+    \vspace{5in}
+    \item {[5 Points]} Identify the characteristics of the environment and provide a brief justification as to why you characterized the environment in that way   \newline
+    As a reminder, the characteristics of the environments are as follows:
+    \begin{itemize}[noitemsep]
+        \item Fully observable vs. partially observable
+        \item Single-agent vs. multi-agent 
+        \item Deterministic vs. nondeterministic 
+        \item Episodic vs. sequential
+        \item Static vs. dynamic 
+        \item Discrete vs. continuous 
+        \item Known vs. unknown
+    \end{itemize} 
+    \vspace{5in}
+\end{enumerate}
+
+\newpage
+\subsection{K-Nearest Neighbors [10 Points]}
+
+The training dataset below contains 6 data points (see Table. \ref{table:knn_train_data}). Each data point has 3 features and a class name (A/B). We want to use a k-nearest neighbors (k-NN) classifier to predict the class of any new testing data point (query point). Note that, the distance between 2 data points is the Minkowski distance ($L^p$ norm). In this homework, we use $p=2$ for Minkowski distance, which is the Euclidean distance. Recall that, the Euclidean distance between $a$ and $b$ for n-dimensional space is $d = \sqrt{(a_1 - b_1)^2 + (a_2 - b_2)^2 + \dots + (a_n - b_n)^2}$.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+$x$ & $\texttt{Feature 1}$ & $\texttt{Feature 2}$ & $\texttt{Feature 3}$ & Class\\
+\hline
+$x_{1}$ & 5 & 2 & 8 & $y_{1}=$ A \\
+\hline
+$x_{2}$ & 7 & 6 & 1 & $y_{2}=$ B \\
+\hline
+$x_{3}$ & 0 & 6 & 0 & $y_{3}=$ A \\
+\hline
+$x_{4}$ & 2 & 7 & 4 & $y_{4}=$ B \\
+\hline
+$x_{5}$ & 9 & 2 & 4 & $y_{5}=$ A \\
+\hline
+$x_{6}$ & 3 & 5 & 8 & $y_{5}=$ B \\
+\hline
+\end{tabular}
+\caption{Training dataset for k-nearest neighbors}
+\label{table:knn_train_data}
+\end{table}
+
+
+Now, we have a query point with \texttt{Feature 1} = 8, \texttt{Feature 2} = 0, \texttt{Feature 3} = 3. Suppose we only consider \texttt{Feature 1} to \texttt{Feature m} for Trial m. For example, we only consider \texttt{Feature 1} and \texttt{Feature 2} for Trial 2. Calculate the distances from the query point to the training data points (round to 3 decimal places) for Trial 1 to 3 and filling the blanks in the table below (see Table. \ref{table:knn_distances}). Then, run the k-NN algorithm with $k=3$ and write the 3 nearest neighbors (e.g. $x_{1}$, $x_{2}$, $x_{3}$) as well as the classification of the query point for each trial.
+    
+    \begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|l|l|l|l|}
+    \hline
+    $x$ & Trial 1 & Trial 2 & Trial 3\\
+    \hline
+    $x_{1}$ &  &  &  \\
+    \hline
+    $x_{2}$ &  &  &  \\
+    \hline
+    $x_{3}$ &  &  &  \\
+    \hline
+    $x_{4}$ &  &  &  \\
+    \hline
+    $x_{5}$ &  &  &  \\
+    \hline
+    $x_{6}$ &  &  &  \\
+    \hline
+    \end{tabular}
+    \caption{Distances table of k-NN}
+    \label{table:knn_distances}
+    \end{table}
+
+\newpage
+
+\subsection{Decision Tree [15 Points]}
+Given the training dataset below (see Table. \ref{table:decision_tree_train_data}), we will use the decision tree to classify whether a team can play Basketball(\texttt{PlayBasketball} $=$ Yes) or  not  PlayBasketball (\texttt{PlayBasketball} $=$ No). There are three attributes for each data point, namely \texttt{Temperature}, \texttt{Humidity}, and \texttt{Outlook}. \texttt{Temperature} can take from $\{Hot, Mild, Cool\}$. \texttt{Humidity} can take from $\{High, Normal\}$. \texttt{Outlook} can take from $\{Sunny, Overcast, Rain\}$.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+$x$ &  $\texttt{Outlook}$&$\texttt{Humidity}$& $\texttt{Temperature}$& $\texttt{PlayBasketball}$\\
+\hline
+$x_1$ &  Sunny&High& Hot& $y_1=$ No\\
+\hline
+$x_2$ &  Sunny&High& Hot& $y_2=$ No \\
+\hline
+$x_3$ &  Overcast&High& Hot& $y_3=$ Yes \\
+\hline
+$x_4$ &  Rain&High& Mild& $y_4=$ Yes\\
+\hline
+$x_5$ &  Rain&Normal& Cool& $y_5=$ Yes\\
+\hline
+$x_6$ &  Rain&Normal& Cool& $y_6=$ No\\
+\hline
+$x_7$ &  Overcast&Normal& Cool& $y_7=$ Yes \\
+\hline
+$x_8$ &  Sunny&High& Mild& $y_8=$ No \\
+\hline
+$x_9$ &  Sunny&Normal& Cool& $y_9=$ Yes\\
+\hline
+$x_{10}$ &  Rain&Normal& Mild& $y_{10}=$ Yes \\
+\hline
+\end{tabular}
+\caption{Training dataset for decision tree learning}
+\label{table:decision_tree_train_data}
+\end{table}
+ \vspace{200px}
+\begin{enumerate}[(a)]
+    \item {[6 Points]} Calculate the information gain for each attribute and answer what should be the first splitting attribute (root node)? (round to 3 decimal places)
+
+    \vspace{200px}
+    
+    \item {[6 Points]} Assume that you decide to first split on Humidity. Consider the Two branches that result.
+  \begin{enumerate}[label=(\roman*)]
+
+    \item What is the resulting entropy of the class label given the data points in each of the Two branches?(round to 3 decimal places)
+
+    \vspace{200px}
+    \item What is the Information Gain (IG) for Humidity? (Note, you calculated this in problem 1.3a, just write the value here).(round to 3 decimal places)
+\vspace{100px}
+    \item Assume that you next split on Temperature. What is the resulting IG for Temperature on each branch?(round to 3 decimal places)
+
+
+
+\end{enumerate}
+    \vspace{200px}
+    \item {[3 Points]} List and briefly explain two distinct problems of using decision trees for classification.
+
+    \vspace{200px}
+    
+    
+\end{enumerate}
+
+
+\newpage
+\subsection{Regression [15 Points]}
+
+\begin{enumerate}[(a)]
+
+    \item {[8 points]} We want to train an univariate linear regression model given the training dataset in Table \ref{table:lr_test_data}. Our model will take the form $h_{\mathbf{w}}(x) = w_1x+w_0$. What values of $w_0$ and $w_1$ minimize the empirical loss? For reference, our loss function is below.  
+    \begin{align*}
+        \mathcal{L}oss(h_{\mathbf{w}}(x)) &= \sum_iL_2(y_i,h_{\mathbf{w}}(x_i)) \\
+                                       &= \sum_i(y_i - h_{\mathbf{w}}(x_i))^2
+    \end{align*}
+    
+
+    \begin{table}[th]
+    \centering
+    \begin{tabular}{|l|l|}
+    \hline
+    Input feature $x$ & Output $y$\\
+    \hline
+    $x_{1} = 7$ & $y_{1}=$ 6 \\
+    \hline
+    $x_{2} = 2$ & $y_{2}=$ 2 \\
+    \hline
+    $x_{3} = 4$ & $y_{3}=$ 3 \\
+    \hline
+    \end{tabular}
+    \caption{Training dataset for linear regression}
+    \label{table:lr_test_data}
+    \end{table}
+
+    \vspace{300px}
+
+    \item {[2 points]} Now, suppose that we receive two new data points, given in Table \ref{table:lr_new_data}. 
+    \begin{table}[th]
+    \centering
+    \begin{tabular}{|l|l|}
+    \hline
+    Input feature $x$ & Output $y$\\
+    \hline
+    $x_{4}=3$ & $y_{4}=$ 2 \\
+    \hline
+    $x_{5}=-1$ & $y_{5}=$ -1 \\
+    \hline
+    \end{tabular}
+    \caption{Testing dataset for linear regression}
+    \label{table:lr_new_data}
+    \end{table}
+    
+    Using the weights that you calculated in part (a), what values will your model predict for $x_1$ through $x_5$? Your answer should list all five predictions.
+
+    % \newpage
+    \vspace{250px}
+
+    \item {[3 points]} Given all five data points, what is the overall loss of your model? Use the loss function given above.
+
+    \vspace{200px}
+    
+    \item {[2 points]} Compute the $R^2$ statistic for your model. What does this tell you about the effectiveness of your model?
+
+    \vspace{200px}
+
+    
+
+\end{enumerate}
+
+\newpage
+
+\section{Programming [50 Points]} 
+
+\subsection{Setup}
+All programming assignments for this course use Python. If you're new to Python or not very experienced with it, please come to office hours; we're happy to help! We recommend also checking out the \href{https://www.pythoncheatsheet.org/}{\color{blue}{Python Cheatsheet}}. The topics you'd need from here are: Basics, Built-in Functions, Control Flow, Functions, Lists, Tuples, Dictionaries, Sets, OOP, and Virtual Environments. We recommend also checking out the Python \href{https://umich.instructure.com/courses/730129/files/folder/Coding%20Resources?preview=39232639}{\color{blue}{Resources}} document on Canvas. We have also shared a document \href{https://umich.instructure.com/courses/730129/files/folder/Coding%20Resources?preview=39232633}{\color{blue}{Debugging Tips}} to help you debug your code. These resources are on Canvas, under `Files' > `Coding Resources'.
+
+\subsubsection{Google Colab Setup}
+
+To avoid issues with Python installations and virtual environments, the code for this assignment will be completed in \textbf{Google Colab}. 
+We recommend these steps for getting started:
+\begin{enumerate}[(1)]
+    \item Download the starter code files off of Canvas.
+    \item Create a folder for this HW1 programming assignment on your Google Drive and upload all of the starter code files into that folder.
+    \item One of the starter code files is a notebook \texttt{.ipynb} file. To open this file, create a blank Google Colab notebook, go to `File' > `Open Notebook', and select the `hw1\_part1.ipynb' starter code file. You can now run and edit this notebook to complete the assignment!
+    \item The Colab notebook has additional directions for making sure the notebook can read from the other relevant starter code files.
+\end{enumerate}
+Please come to office hours if you have any issues running in Colab!
+
+The programming section has \textbf{two parts}: Part 1 (\textbf{Decision Trees}, 20 points) and Part 2 (\textbf{Backpropagation}, 30 points).
+
+\subsection{Part 1: Decision Tree Classifier [20 Points]}
+In this part, you will implement core components of a \textbf{decision tree classifier from scratch}. The goal is to understand how decision trees split data using \textbf{entropy} and \textbf{information gain}.
+
+We use the \hyperlink{https://archive.ics.uci.edu/dataset/267/banknote+authentication}{\textbf{Banknote Authentication dataset}}, provided as \texttt{bank_auth.txt}.
+The dataset has 4 continuous features and a binary label in \{0,1\} as the last column.
+
+You are given:
+\begin{itemize}
+    \item \textbf{\texttt{dt.py}}: decision tree implementation with \textbf{two} TODO blocks. (Question 2.3)
+    \item \textbf{\texttt{hw1\_part1.ipynb}}: loads data, trains the model, and reports accuracy (explanatory, nothing to submit for grading here).
+\end{itemize}
+\textbf{Do not modify any code outside the TODO blocks.}
+
+\subsubsection{Decision Tree Implementation (\texttt{dt.py})}
+
+The decision tree is already fully implemented except for two functions.
+
+\paragraph{TODO 1: Entropy [10 points]}
+Implement:
+\begin{verbatim}
+def entropy(y: np.ndarray) -> float:
+\end{verbatim}
+
+This function should compute:
+\[
+H(y) = -\sum_{c \in \{0,1\}} p_c \log_2 p_c
+\]
+Use the convention that $0 \log 0 = 0$.
+
+\paragraph{TODO 2: Information Gain [10 points]}
+Implement:
+\begin{verbatim}
+def information_gain(y, y_left, y_right) -> float:
+\end{verbatim}
+
+\[
+IG = H(y) - \frac{|L|}{|y|} H(y_L) - \frac{|R|}{|y|} H(y_R)
+\]
+
+These functions are used internally when selecting the best split.
+
+\subsubsection{How Continuous Features Are Split}
+\textit{Note: This subsection is purely explanatory. There is nothing to compute or implement here.}\\
+Although features are continuous, the decision tree always makes \textbf{binary decisions}.
+At each node, the algorithm:
+\begin{itemize}
+    \item considers candidate thresholds between sorted unique feature values,
+    \item splits data using the rule:
+    \[
+    x_j \le \tau \;\; \text{vs.} \;\; x_j > \tau
+    \]
+\end{itemize}
+The threshold that yields the highest information gain is selected. Running \texttt{hw1\_part1.ipynb} loads \texttt{bank\_auth.txt}, creates a deterministic 80/20 train--test split, trains your decision tree, and reports training and test accuracy (a correct implementation should achieve over 90\% accuracy).
+
+\newpage
+\subsection{Part 2: Backpropagation [30 Points]}
+In this part, you will implement \textbf{backpropagation from scratch} for neural networks, using only \texttt{numpy}. The goal is to understand how the chain rule propagates gradients backward through a network so that its parameters can be trained by gradient descent.
+
+\textbf{You are given one starter file:}
+\begin{itemize}
+    \item \textbf{\texttt{backprop.py}}: contains function stubs with TODO blocks for both problems below.
+\end{itemize}
+\textbf{Rules.} You may \textbf{only} use \texttt{numpy}. Do \textbf{not} use any deep-learning framework (PyTorch, TensorFlow, JAX, autograd, etc.), and do not change the function signatures. Do not modify code outside the TODO blocks. To run a quick end-to-end sanity check of your code, run:
+\begin{verbatim}
+python backprop.py
+\end{verbatim}
+
+\subsubsection{Problem 1: A Single Sigmoid Neuron [10 points]}
+Consider a single neuron with weights $\mathbf{w}\in\mathbb{R}^d$ and bias $b\in\mathbb{R}$, applied to one training example $(\mathbf{x}, y)$ where $\mathbf{x}\in\mathbb{R}^d$ and $y\in\{0,1\}$.
+
+\textbf{Forward pass:}
+\[
+z = \mathbf{w}^\top \mathbf{x} + b,
+\qquad
+a = \sigma(z) = \frac{1}{1 + e^{-z}},
+\]
+and the \textbf{binary cross-entropy loss} is
+\[
+L = -\big(\,y \log a + (1-y)\log(1-a)\,\big).
+\]
+
+\textbf{TODO (in \texttt{backprop.py}):} implement
+\begin{verbatim}
+def sigmoid(z): ...
+def forward_single(x, w, b):  -> a
+def backward_single(x, w, b, y):  -> (dw, db)
+\end{verbatim}
+where \texttt{backward\_single} returns the gradients $\dfrac{\partial L}{\partial \mathbf{w}}$ (shape $(d,)$) and $\dfrac{\partial L}{\partial b}$ (scalar).
+
+\subsubsection{Problem 2: A Two-Layer Neural Network [20 points]}
+Now implement forward and backward passes for a \textbf{two-layer (one hidden layer) MLP} over a batch of $N$ examples $X\in\mathbb{R}^{N\times d}$ with labels $\mathbf{y}\in\{0,1\}^{N\times 1}$.
+
+\textbf{Forward pass:}
+\begin{align*}
+Z_1 &= X W_1 + \mathbf{b}_1, & W_1 &\in \mathbb{R}^{d\times h},\ \mathbf{b}_1\in\mathbb{R}^{h}, & A_1 &= \tanh(Z_1),\\
+Z_2 &= A_1 W_2 + \mathbf{b}_2, & W_2 &\in \mathbb{R}^{h\times 1},\ \mathbf{b}_2\in\mathbb{R}^{1}, & A_2 &= \sigma(Z_2).
+\end{align*}
+The loss is the \textbf{mean} binary cross-entropy over the batch:
+\[
+L = -\frac{1}{N}\sum_{n=1}^{N}\Big[\,y_n \log a_n + (1-y_n)\log(1-a_n)\,\Big].
+\]
+
+\textbf{TODO (in \texttt{backprop.py}):} implement
+\begin{verbatim}
+def tanh(z): ...
+def mlp_forward(X, params):    -> (A2, cache)
+def bce_loss(A2, y):           -> scalar
+def mlp_backward(cache, params, y):  -> grads
+\end{verbatim}
+where \texttt{params} is a dict with keys \texttt{W1}, \texttt{b1}, \texttt{W2}, \texttt{b2}, and \texttt{grads} returns $\dfrac{\partial L}{\partial W_1},\dfrac{\partial L}{\partial \mathbf{b}_1},\dfrac{\partial L}{\partial W_2},\dfrac{\partial L}{\partial \mathbf{b}_2}$, each with the \textbf{same shape} as the corresponding parameter.
+
+\end{document}

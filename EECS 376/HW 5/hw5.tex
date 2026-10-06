@@ -521,19 +521,22 @@
         \#_{\mathtt L}(s)=\#_{\mathtt R}(s)\text{ and }
         \#_{\mathtt U}(s)=\#_{\mathtt D}(s)\}.
       \]
-      Suppose, for contradiction, that a DFA recognizes $H$.  Regular languages
-      are closed under intersection, so intersecting $H$ with the regular
-      language $\mathtt R^*\mathtt L^*$ would produce a regular language.  But
+      Suppose, for contradiction, that a DFA $M$ with $s$ states decides $H$.
+      Consider the $s+1$ strings
       \[
-        H\cap\mathtt R^*\mathtt L^*
-        =\{\mathtt R^n\mathtt L^n:n\geq0\}.
+        \varepsilon,\mathtt R,\mathtt R^2,\ldots,\mathtt R^s.
       \]
-      The latter language is not regular.  Indeed, if its pumping length were
-      $p$, then the string $\mathtt R^p\mathtt L^p$ would have a decomposition
-      $xyz$ with $|xy|\leq p$ and $|y|>0$.  Thus $y=\mathtt R^t$ for some
-      $t>0$.  Pumping $y$ out gives $\mathtt R^{p-t}\mathtt L^p$, which is not
-      in the language, contradicting the pumping lemma.  Hence $H$ is not
-      regular, and no DFA can decide the homecoming problem.
+      After reading these strings, $M$ has visited only $s$ possible states,
+      so two of them, say $\mathtt R^i$ and $\mathtt R^j$ with $0\leq i<j\leq s$,
+      leave $M$ in the same state.  Append the same suffix $\mathtt L^i$ to
+      both strings.  Since the two computations start their suffix in the
+      same state, $M$ must give the same answer on
+      $\mathtt R^i\mathtt L^i$ and $\mathtt R^j\mathtt L^i$.
+
+      However, $\mathtt R^i\mathtt L^i$ returns to the origin and belongs to
+      $H$, while $\mathtt R^j\mathtt L^i$ ends at horizontal coordinate
+      $j-i>0$ and does not belong to $H$.  This contradiction shows that no
+      finite-state DFA can decide the homecoming language.
     \end{solution}
 
     \part[4] Give an algorithm using pseudocode that takes as input an arbitrary command sequence~$s$ and determines whether Pac-Man will end up back at home after completing the sequence. Justify its correctness, but you do not need to analyze the running time.

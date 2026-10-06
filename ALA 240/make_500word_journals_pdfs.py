@@ -38,6 +38,8 @@ def parse_entries(path: Path, zh: bool):
         blocks = []
         current = []
         for line in lines[1:]:
+            if line.startswith("*Draft assumption:"):
+                continue
             if line.startswith("## "):
                 if current:
                     joiner = "" if zh else " "
@@ -57,12 +59,23 @@ def parse_entries(path: Path, zh: bool):
     return entries
 
 
+def use_full_week2(compact_source: Path, full_source: Path, zh: bool):
+    """Use the complete Week 2 response because Canvas labels Part One as two pages."""
+    compact_entries = parse_entries(compact_source, zh=zh)
+    full_entries = parse_entries(full_source, zh=zh)
+    full_week2 = next((entry for entry in full_entries if entry[0] == "2"), None)
+    if full_week2 is None:
+        raise RuntimeError(f"Week 2 entry not found in {full_source.name}")
+    return [full_week2 if entry[0] == "2" else entry for entry in compact_entries]
+
+
 class JournalDocTemplate(BaseDocTemplate):
     pass
 
 
 def make_pdf(source: Path, output: Path, zh: bool):
-    entries = parse_entries(source, zh=zh)
+    full_source = ROOT / ("Week1-5_Journal_Drafts_ZH.md" if zh else "Week1-5_Journal_Drafts.md")
+    entries = use_full_week2(source, full_source, zh=zh)
     if len(entries) != 5:
         raise RuntimeError(f"Expected five entries in {source.name}, found {len(entries)}")
 
